@@ -1,0 +1,8 @@
+This is an example of a very basic java webapp.
+
+Build with: jar cf webapp.war index.html
+            (or zip webapp.war index.html)
+
+Run with: Copy or move the webapp.war into ${TOMCAT_HOME}/webapps
+          Start tomcat - ${TOMCAT_HOME}/bin/catalina.sh run
+          Open http://localhost:8080/webapp in a browser
