@@ -5,9 +5,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 /**
- * This example will open up a ServerSocket listening for connections on port :8080.
+ * This program will open up a ServerSocket listening for connections on port :8080.
  * When a client connects, the server will retrieve it's input and output streams, read
- * the HTTP request status line and write back a HTTP response according to RFC2616.
+ * and print out the HTTP request status line before it sends back a HTTP response.
  * @author folkol
  */
 public class HttpServer {
