@@ -1,1 +1,11 @@
+Prerequisites:
+* Download and install Tomcat 7
+  - http://tomcat.apache.org/download-70.cgi (Binary, Core)
+* Download and install MySQL
+  - http://dev.mysql.com/doc/refman/5.0/en/macosx-installation.html
+* Download and install Eclipse (For Java EE)
+  - http://www.eclipse.org/downloads/
+
+
+
 There is a README in each of the subfolders.

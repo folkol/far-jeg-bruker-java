@@ -20,12 +20,9 @@ public class HttpServer {
 
             System.out.println(in.readLine());
 
-            out.write("HTTP/1.1 200 OK\r\n".getBytes());
-            out.write("\r\n".getBytes());
+            out.write("HTTP/1.1 200 OK\r\n\r\n".getBytes());
             out.write("Hello World".getBytes());
 
-            in.close();
-            out.close();
             accept.close();
         }
     }
