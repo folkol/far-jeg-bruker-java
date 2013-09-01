@@ -4,7 +4,13 @@ import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class HelloWorld {
+/**
+ * This example will open up a ServerSocket listening for connections on port :8080.
+ * When a client connects, the server will retrieve it's input and output streams, read
+ * the HTTP request status line and write back a HTTP response according to RFC2616.
+ * @author folkol
+ */
+public class HttpServer {
     public static void main(String[] args) throws Exception {
         ServerSocket server = new ServerSocket(8080);
         while(true) {
@@ -16,7 +22,7 @@ public class HelloWorld {
 
             out.write("HTTP/1.1 200 OK\r\n".getBytes());
             out.write("\r\n".getBytes());
-            out.write("<html><body>Hello World</body></html>".getBytes());
+            out.write("Hello World".getBytes());
 
             in.close();
             out.close();
