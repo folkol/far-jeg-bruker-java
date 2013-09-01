@@ -18,6 +18,8 @@ public class HelloWorld {
             out.write("\r\n".getBytes());
             out.write("<html><body>Hello World</body></html>".getBytes());
 
+            in.close();
+            out.close();
             accept.close();
         }
     }
