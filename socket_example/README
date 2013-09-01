@@ -1,4 +1,4 @@
 Simple example of a http server.
 
 Build with: javac src/HelloWorld.java
-Run with: java HelloWorld
+Run with: java -cp src HelloWorld
