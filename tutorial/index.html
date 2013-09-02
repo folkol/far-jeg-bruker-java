@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Webprogrammering i Java - Grundläggande koncept</title>
+    <script src="assets/jquery.min.js"></script>
+    <link rel="stylesheet" href="assets/bootstrap.css">
+    <link rel="stylesheet" href="assets/docs.css">
+    <script src="assets/bootstrap.js"></script>
+    <style>
+      .strokeme { color: white; text-shadow: -1px -1px 0 #888, 1px -1px 0 #888, -1px 1px 0 #888, 1px 1px 0 #888; }
+      .bs-docs-sidenav.affix { top: -5px; }
+      .top-banner { height: 40px; font-size: 30px; top-padding: 10px; text-align: center; }
+      .menu { padding-top: 25px; }
+      .banner { background-color: #bbb; margin-bottom: -70px; margin-top: 0px; padding-top: 15px; box-shadow: 0px 8px 4px #888; }
+      .container { margin-top: 40px; }
+      .main-column { background-color: #ddd; border: 1px solid; border-color: #aaa; padding: 8px; margin-bottom: 40px; margin-top: 55px;  }
+      section { padding-top: 0px; }
+      body { padding-top: 0px; background-color: #eee; }
+    </style>
+  </head>
+  <body data-spy="scroll" data-target=".bs-docs-sidebar">
+    <section class="banner">
+        <div class="top-banner">
+          <p class="strokeme">
+            Webprogrammering i Java - Grundläggande koncept
+          </p>
+        </div>
+    </section>
+    <div class="container">
+      <div class="row">
+        <div class="span4 bs-docs-sidebar menu">
+          <ul class="nav nav-list bs-docs-sidenav" data-spy="affix" data-offset-top="55">
+            <li class='active'><a href="#preparations">Förberedelser</a></li>
+            <li><a href="#webApp">1 - Webapp</a></li>
+            <li><a href="#webServer">2 - Webserver</a></li>
+            <li><a href="#exampleServlet">3 - Servlet</a></li>
+            <li><a href="#jdbc">4 - JDBC</a></li>
+          </ul>
+        </div>
+        <div class="span8">
+          <div class="main-column">
+            <section id="preparations">
+              <h1>Förberedelser</h1>
+              <p>Innan vi sätter igång med hackandet så krävs lite förberedelser. Vissa av dessa har du säkert redan gjort, men man vet ju aldrig.</p>
+              <p>Var och ett av följande fyra koncept kommer att presenteras med en liten text som sammanfattar vad det är, och sedan en laboration i steg för steg som känner på konceptet i fråga.</p>
+              <p>Om du kör fast eller helt enkelt inte orkar göra labben själv (Även om det är rekommenderat) så finns färdig kod för var och ett av koncepten i var sin subfolder.</p>
+              <h5>I ) Installera Tomcat 7</h5>
+              <p>Apache Tomcat 7 är den <a href="http://en.wikipedia.org/wiki/Servlet_container">Servlet-container</a> som vi ska använda oss av för att köra vår webapp.</p>
+              <pre class="prettyprint"><a href="http://apache.mirror3.ip-only.net/tomcat/tomcat-7/v7.0.42/bin/apache-tomcat-7.0.42.zip">Ladda ner Apache Tomcat 7</a></pre>
+              <div class="alert alert-info"><p>Platsen där du installerar tomcat (Jag packade upp min i /opt/tomcat) kommer att hänvisas till som $TOMCAT_HOME senare på denna sida.</p></div>
+              <h5>II ) Installera Eclipse</h5>
+              <p>Eclipse är det IDE vi ska använda för att skriva och debugga kod.</p>
+              <pre class="prettyprint"><a href="http://www.eclipse.org/downloads/">Ladda ner Eclipse for Java EE</a></pre>
+              <h5>III ) Installera MySQL</h5>
+              <p>MySQL är den <a href="http://en.wikipedia.org/wiki/Relational_database_management_system">databas</a> som vi ska använda oss av för att köra vår webapp.</p>
+              <pre class="prettyprint"><a href="http://dev.mysql.com/doc/refman/5.1/en/macosx-installation.html">Ladda ner och installera MySQL</a></pre>
+            </section>
+          </div>
+
+          <div class="main-column">
+            <section id="webApp">
+              <h1>1 - Webapp</h1>
+              <p>En Java Webapp är ett (zip-)arkiv innehållandes statiska resurser, applikationskod och configuration. Arkivet i fråga döps till valfritt filnamn med ändelsen <a href="http://en.wikipedia.org/wiki/WAR_file_format_(Sun)">.war</a></p>
+              <p>Vi kommer att bygga lite mer avancerade .war-filer i en senare labb, men nu ska vi göra en minimal webapp till att börja med!</p>
+              <h5>I ) Skapa en index.html med lite text i</h5>
+              <pre class="prettyprint"> $ echo "Hello world" > index.html</pre>
+              <h5>II ) Skapa ett .war-arkiv innehållandes denna fil</h5>
+              <pre class="prettyprint"> $ zip webapp.war index.html</pre>
+              <h5>III ) Kopiera eller flytta arkivet till ${TOMCAT_HOME}/webapps/</h5>
+              <pre class="prettyprint"> $ cp webapp.war ${TOMCAT_HOME}/webapps/</pre>
+              <h5>IV ) Starta tomcat</h5>
+              <pre class="prettyprint"> $ $TOMCAT_HOME}/bin/catalina.sh run</pre>
+              <h5>V ) Du bör nu kunna se innehållet i en browser</h5>
+              <pre class="prettyprint">>> open <a href=" http://localhost:8080/webapp/index.html">http://localhost:8080/webapp/index.html</a></pre>
+            </section>
+          </div>
+
+          <div class="main-column">
+            <section id="webServer">
+              <h1>2 - Webserver</h1>
+              <p>En webserver är ett program som öppnar en <a href="http://en.wikipedia.org/wiki/Network_socket">socket</a> och lyssnar efter connections. När en klient ansluter så läser servern in ett request i form av en (<a href="http://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol">HTTP</a>-formatterad) textsträng och skriver tillbaka en response i form av en (<a href="http://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol">HTTP-</a>formatterad) textsträng till klienten.</p>
+              <p>Det viktiga att ta till sig här är att webservrar egentligen inte gör mer magiskt än att läsa in textsträngar och svara med textsträngar, och det är formatteringen på strängarna i fråga som gör att det är HTTP.</p>
+              <h5>HTTP-request</h5>
+              <p>Ett HTTP-request består av en "Request-line" (METOD URI HTTPVERSION, Följt av newline, kodat som \r\n), ett godtyckligt antal "Headers" (Ett kolonseparerat namn/värde-par avslutat med en newline kodad som \r\n). När klienten inte har fler headers att skicka så skickas en tom rad (Kodad som \r\n) för av berätta för servern att man inte tänker skicka fler headers. Om man skickat headern "Content-length" så kan man nu skicka en godtycklig payload, om man t.ex. vill skicka upp något till servern.</p>
+              <pre class="prettyprint">GET / HTTP/1.1
+Host: en.wikipedia.org
+Connection: keep-alive
+Cache-Control: no-cache
+User-Agent: My imba web-browser
+
+(Message body)</pre>
+              <h5>HTTP-response</h5>
+              <p>När webservern har bestämt sig för vad för resurs den ska skicka till klienten så formatterar den ett svar på finaste HTTP-manér och skickar tillbaka över socketen.</p>
+              <p>Ett HTTP-respons är formatterat på motsvarande sätt som requestet, fast första raden är en "Status-line" (HTTP_VERSION STATUS_CODE REASON_PHRASE) istället för en "Request-line". Om man tänker skicka tillbaka ett svar så måste man säga hur långt detta ska vara med headern Content-length. Även responset avslutar var rad med en newline kodad som \r\n och en blankrad efter att man skickar alla headers.</p>
+              <pre class="prettyprint">HTTP/1.0 200 OK
+Server: Apache
+Connection: close
+Content-Length: 666
+Content-Type: text/html; charset=UTF-8
+
+(Message body)
+</pre>
+              <h5>Example webserver</h5>
+              <p>Det finns en naiv webserver under foldern "socket", öppna denna och kolla hur den funkar. Ändra gärna dess beteende på något sätt.</p>
+              <p>Du kan antingen öppna projektet i Eclipse ("Import alreay existing project into workspace") eller editera filen med random texteditor.</p>
+              <pre class="prettyprint"> > cd socket
+ > javac src/HttpServer.java
+ > java -cp src HttpServer
+ > open <a href=" http://localhost:8080/webapp/index.html">http://localhost:8080</a></pre>
+              <div class="alert alert-info"><p>Servern avslutas inte av sig själv (Med mindre än att det sker någon form av undantag, den är inte skriven för att vara robust!), så för att avsluta den så får du antingen trycka Ctrl+C om du startade i terminalen eller klicka på den röda stoppknappen om du startade servern från Eclipse.</p></div>
+            </section>
+          </div>
+
+          <div class="main-column">
+            <section id="exampleServlet">
+              <h1>3 - Servlet</h1>
+              <p>Nu när vi bekantat oss lite med vad en webserver faktiskt gör i samband med en klients request så ska vi kolla på hur man hanterar request / response i en Java EE Webserver.</p>
+              <p>När vi ägnar oss åt webprogrammering i Java så är det inte vi själva som öppnar sockets eller parsar HTTP requests, det överlämnar vi till Webcontainern (I vårt fall Tomcat). Det vi däremot gör är att berätta för containern vad som ska skickas tillbaka till klienten beroende på vilken URI som efterfrågats.</p>
+              <p>Varje webapp som startas av containern får en "web context", som i Tomcats fall normalt sett nås under http://localhost:8080/webappens_name.</p>
+              <p>Inom contexten så avgörs vad som ska hända med varje request genom "Servlet mappings". En Servlet är en speciell java-klass är byggd för att hantera request och responses. Servlet-objekten i fråga är inget som vi skapar ("new Servlet();") i vår egen kod, utan även det sköts av Containern som skapar upp objekt efter behov. Dessa Servlet-objekt överlever även requestet i fråga, och återanvänds vid efterföljande requests, även från helt andra klienter.</p>
+              <p>Det enda som krävs för att en klass ska kunna användas som en Servlet är att den ärver (Direkt eller indirekt) från javax.servlet.http.HttpServlet. Denna klass finns inte med i standardbiblioteket (Den tillhör Java EE) och implementeras för sig av var och en av de Containrar som finns.</p>
+              <p>För att kunna kompilera vår Servlet-klass så måste vi peka ut för Eclipse (Eller för javac) var javax.servlet.http.HttpServlet är definierad. Det för man genom att lägga till den på classpathen i samband med kompileringen. I Eclipse så gör man det genom att lägga till en extern jar i projektets "Build path", för javac för man det genom att använda sig av parametern -cp.</p>
+              <pre class="prettyprint"> > cd servlet
+ > javac -cp ${TOMCAT_HOME}/lib/servlet-api.jar src/ExampleServlet.java</pre>
+              <p>För att kunna använda oss av vår servlet-kod i vår webapp så måste den packas in i .war-filen. Den ska placeras under foldern WEB-INF/classes.</p>
+              <p>Att lägga filen där räcker dock inte för att den ska anropas. Vår Servlet-klass måste mappas mot en viss URL genom en "Servlet mapping". Detta kan ske antingen genom att annotera klassen i fråga med @WebServlet eller genom att skriva in det i configurationsfilen web.xml. Vi ska använda oss av web.xml för att undvika Annotations-magin så mkt som möjligt!</p>
+              <p>web.xml ska placeras i foldern WEB-INF/ inne i vår .war-fil</p>
+              <pre class="prettyprint"> > mkdir -p WEB-INF/classes
+ > cp src/ExampleServlet.class WEB-INF/classes/
+ > cp src/web.xml WEB-INF/
+ > zip -r webapp.war WEB-INF
+ > cp webapp.war ${TOMCAT_HOME}/webapps
+ > ${TOMCAT_HOME}/bin/catalina.sh run</pre>
+              <p>Du bör nu kunna se svaret från din Servlet i en browser</p>
+              <pre class="prettyprint"> > open <a href="http://localhost:8080/webapp/ExampleServlet">http://localhost:8080/webapp/ExampleServlet</a></pre>
+            </section>
+          </div>
+
+            <section id="jdbc">
+              <div class="page-header">
+                <h1>Global settings</h1>
+            </div>
+            
+            <h3>Requires HTML5 doctype</h3>
+            <p>Bootstrap makes use of certain HTML elements and CSS properties that require the use of the HTML5 doctype. Include it at the beginning of all your projects.</p>
+          <pre class="prettyprint linenums"><ol class="linenums"><li class="L0"><span class="dec">&lt;!DOCTYPE html&gt;</span></li><li class="L1"><span class="tag">&lt;html</span><span class="pln"> </span><span class="atn">lang</span><span class="pun">=</span><span class="atv">"en"</span><span class="tag">&gt;</span></li><li class="L2"><span class="pln">  ...</span></li><li class="L3"><span class="tag">&lt;/html&gt;</span></li></ol></pre>
+          
+          <h3>Typography and links</h3>
+            <p>Bootstrap sets basic global display, typography, and link styles. Specifically, we:</p>
+            <ul>
+              <li>Remove <code>margin</code> on the body</li>
+              <li>Set <code>background-color: white;</code> on the <code>body</code></li>
+              <li>Use the <code>@baseFontFamily</code>, <code>@baseFontSize</code>, and <code>@baseLineHeight</code> attributes as our typographic base</li>
+              <li>Set the global link color via <code>@linkColor</code> and apply link underlines only on <code>:hover</code></li>
+            </ul>
+            <p>These styles can be found within <strong>scaffolding.less</strong>.</p>
+          </section>
+
+          <section id="webApp">
+            <div class="page-header">
+              <h1>Global settings</h1>
+            </div>
+            
+            <h3>Requires HTML5 doctype</h3>
+            <p>Bootstrap makes use of certain HTML elements and CSS properties that require the use of the HTML5 doctype. Include it at the beginning of all your projects.</p>
+          <pre class="prettyprint linenums"><ol class="linenums"><li class="L0"><span class="dec">&lt;!DOCTYPE html&gt;</span></li><li class="L1"><span class="tag">&lt;html</span><span class="pln"> </span><span class="atn">lang</span><span class="pun">=</span><span class="atv">"en"</span><span class="tag">&gt;</span></li><li class="L2"><span class="pln">  ...</span></li><li class="L3"><span class="tag">&lt;/html&gt;</span></li></ol></pre>
+          
+          <h3>Typography and links</h3>
+            <p>Bootstrap sets basic global display, typography, and link styles. Specifically, we:</p>
+            <ul>
+              <li>Remove <code>margin</code> on the body</li>
+              <li>Set <code>background-color: white;</code> on the <code>body</code></li>
+              <li>Use the <code>@baseFontFamily</code>, <code>@baseFontSize</code>, and <code>@baseLineHeight</code> attributes as our typographic base</li>
+              <li>Set the global link color via <code>@linkColor</code> and apply link underlines only on <code>:hover</code></li>
+            </ul>
+            <p>These styles can be found within <strong>scaffolding.less</strong>.</p>
+          </section>
+        </div>
+</div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,13 @@
+En servlet är en javaklass som hanterar requests och responses.
+Den mappas till en viss URL (Under webappens web context) genom Servlet Mappings. See src/web.xml.
+
+Build with:
+javac -cp lib/servlet-api.jar src/ExampleServlet.java
+mkdir -p WEB-INF/classes
+mv src/ExampleServlet.class WEB-INF/classes/
+cp src/web.xml WEB-INF/
+zip -r webapp.war WEB-INF
+
+Run with:
+cp webapp.war ${TOMCAT_HOME}/webapps
+${TOMCAT_HOME}/bin/catalina.sh run

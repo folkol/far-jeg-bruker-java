@@ -1,0 +1,17 @@
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+         version="3.0"> 
+  
+  <servlet>
+    <display-name>ExampleServlet</display-name>
+    <servlet-name>Example servlet</servlet-name>
+    <servlet-class>ExampleServlet</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>ExampleServlet</servlet-name>
+    <url-pattern>/ExampleServlet</url-pattern>
+  </servlet-mapping>
+  
+</web-app>

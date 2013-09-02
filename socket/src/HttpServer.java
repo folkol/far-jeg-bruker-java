@@ -11,19 +11,30 @@ import java.net.Socket;
  * @author folkol
  */
 public class HttpServer {
+
     public static void main(String[] args) throws Exception {
+        String payload = "<!DOCTYPE html><html><body><h1>Hello World</h1></body></html>";
+        String statusLine = "HTTP/1.1 200 OK\r\n";
+        String headers =
+            "Connection: close\r\n" +
+            "Content-Length: 61\r\n" +
+            "Content-Type: text/html\r\n";
+        String headerDelimiter = "\r\n";
+
         ServerSocket server = new ServerSocket(8080);
         while(true) {
-            Socket accept = server.accept();
-            BufferedReader in = new BufferedReader(new InputStreamReader(accept.getInputStream()));
-            OutputStream out = accept.getOutputStream();
+            Socket connection = server.accept();
 
-            System.out.println(in.readLine());
+            BufferedReader request = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            System.out.println(request.readLine());
 
-            out.write("HTTP/1.1 200 OK\r\n\r\n".getBytes());
-            out.write("Hello World".getBytes());
+            OutputStream response = connection.getOutputStream();
+            response.write(statusLine.getBytes());
+            response.write(headers.getBytes());
+            response.write(headerDelimiter.getBytes());
+            response.write(payload.getBytes());
 
-            accept.close();
+            connection.close();
         }
     }
 }
