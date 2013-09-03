@@ -47,8 +47,10 @@
               <p>Om du kör fast eller helt enkelt inte orkar göra labben själv (Även om det är rekommenderat) så finns färdig kod för var och ett av koncepten i var sin subfolder.</p>
               <h5>I ) Installera Tomcat 7</h5>
               <p>Apache Tomcat 7 är den <a href="http://en.wikipedia.org/wiki/Servlet_container">Servlet-container</a> som vi ska använda oss av för att köra vår webapp.</p>
-              <pre class="prettyprint"><a href="http://apache.mirror3.ip-only.net/tomcat/tomcat-7/v7.0.42/bin/apache-tomcat-7.0.42.zip">Ladda ner Apache Tomcat 7</a></pre>
-              <div class="alert alert-info"><p>Platsen där du installerar tomcat (Jag packade upp min i /opt/tomcat) kommer att hänvisas till som $TOMCAT_HOME senare på denna sida.</p></div>
+              <pre class="prettyprint"> > wget <a href="http://apache.mirror3.ip-only.net/tomcat/tomcat-7/v7.0.42/bin/apache-tomcat-7.0.42.zip">http://apache.mirror3.ip-only.net/tomcat/tomcat-7/v7.0.42/bin/apache-tomcat-7.0.42.zip</a> -O /tmp/tomcat7.zip
+ > unzip /tmp/tomcat7.zip -d /opt/
+ > ln -s /opt/apache-tomcat-7.0.42 /opt/tomcat7</pre>
+              <div class="alert alert-info"><p>Platsen där du installerar tomcat (I mitt fall i /opt/tomcat7) kommer att hänvisas till som $TOMCAT_HOME senare på denna sida.</p></div>
               <h5>II ) Installera Eclipse</h5>
               <p>Eclipse är det IDE vi ska använda för att skriva och debugga kod.</p>
               <pre class="prettyprint"><a href="http://www.eclipse.org/downloads/">Ladda ner Eclipse for Java EE</a></pre>
