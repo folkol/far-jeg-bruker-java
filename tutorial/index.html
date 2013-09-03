@@ -58,7 +58,8 @@
               <p>Apache Tomcat 7 är den <a href="http://en.wikipedia.org/wiki/Servlet_container">Servlet-container</a> som vi ska använda oss av för att köra vår webapp.</p>
               <pre class="prettyprint"> $ wget <a href="http://apache.mirror3.ip-only.net/tomcat/tomcat-7/v7.0.42/bin/apache-tomcat-7.0.42.zip">http://apache.mirror3.ip-only.net/tomcat/tomcat-7/v7.0.42/bin/apache-tomcat-7.0.42.zip</a> -O /tmp/tomcat7.zip
  $ unzip /tmp/tomcat7.zip -d /opt/
- $ ln -s /opt/apache-tomcat-7.0.42 /opt/tomcat7</pre>
+ $ ln -s /opt/apache-tomcat-7.0.42 /opt/tomcat7
+ $ chmod +x ${TOMCAT_HOME}/bin/*</pre>
               <div class="alert alert-info"><p>Platsen där du installerar tomcat (I mitt fall i /opt/tomcat7) kommer att hänvisas till som $TOMCAT_HOME senare på denna sida.</p></div>
               <h5>III ) Installera Eclipse</h5>
               <p>Eclipse är det IDE vi ska använda för att skriva och debugga kod.</p>
