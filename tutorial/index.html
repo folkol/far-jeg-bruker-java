@@ -141,27 +141,28 @@ Content-Type: text/html; charset=UTF-8
             <section id="jdbc">
               <h1>4 - JDBC</h1>
               <p><a href="http://en.wikipedia.org/wiki/Java_Database_Connectivity">JDBC</a> är en standard för att kommunicera med en databas från javakod. Det är ett standardiserat interface, som varje databasvendor i sin tur implementerar i form av en "JDBC Driver".</p>
-              <p>För att använda sig av denna driver så krävs lite handpåläggning i form av:</p>
+              <p>För att använda sig av JDBC så krävs lite handpåläggning i form av:</p>
               <h5>I ) Ladda ner en lämplig JDBC-driver.</h5>
-              <p>Ladda ner en JDBC-implementation (S.k. "JDBC-Driver") för din databas. I vårt fall <a href="http://dev.mysql.com/downloads/connector/j">"Connector/J" från dev.mysql</a></p>
+              <p>Ladda ner en JDBC-implementation (S.k. "JDBC-Driver") för din databas. I vårt fall <a href="http://dev.mysql.com/downloads/connector/j">"Connector/J" från dev.mysql</a> (Den är redan nerladdad och finns under jdbc/lib).</p>
               <h5>II ) Skriv en snutt databaskod</h5>
-              <pre class="prettyprint"></pre>
-              <h3>Requires HTML5 doctype</h3>
-              <p>Bootstrap makes use of certain HTML elements and CSS properties that require the use of the HTML5 doctype. Include it at the beginning of all your projects.</p>
-              <pre class="prettyprint linenums"><ol class="linenums"><li class="L0"><span class="dec">&lt;!DOCTYPE html&gt;</span></li><li class="L1"><span class="tag">&lt;html</span><span class="pln"> </span><span class="atn">lang</span><span class="pun">=</span><span class="atv">"en"</span><span class="tag">&gt;</span></li><li class="L2"><span class="pln">  ...</span></li><li class="L3"><span class="tag">&lt;/html&gt;</span></li></ol></pre>
-              
-              <h3>Typography and links</h3>
-              <p>Bootstrap sets basic global display, typography, and link styles. Specifically, we:</p> <!--  -->
-              <ul>
-                <li>Remove <code>margin</code> on the body</li>
-                <li>Set <code>background-color: white;</code> on the <code>body</code></li>
-                <li>Use the <code>@baseFontFamily</code>, <code>@baseFontSize</code>, and <code>@baseLineHeight</code> attributes as our typographic base</li>
-                <li>Set the global link color via <code>@linkColor</code> and apply link underlines only on <code>:hover</code></li>
-              </ul>
-              <p>These styles can be found within <strong>scaffolding.less</strong>.</p>
+              <p>Se jdbc/src/JDBCExample.java</p>
+              <h5>III ) Skapa databasen "jdbcexample"</h5>
+              <pre class="prettyprint"> > mysql -u root
+ mysql> create database jdbcexample;
+ mysql> GRANT ALL PRIVILEGES ON jdbcexample.* TO
+ mysql>   -->  'mart'@'%' IDENTIFIED BY 'mart';
+ mysql> use jdbcexample;
+ mysql> create table mytable
+ mysql>   --> (id INT NOT NULL AUTO_INCREMENT,
+ mysql>   --> PRIMARY KEY(id),
+ mysql>   --> data VARCHAR(255));
+ mysql> insert into mytable (data) values ('Exempeldata');</pre>
+              <h5>IV ) Kompilera och kör databasexemplet</h5>
+              <pre class="prettyprint">javac -cp lib/mysql-connector-java-5.1.26-bin.jar src/JDBCExample.java
+java -cp lib/mysql-connector-java-5.1.26-bin.jar:src JDBCExample</pre>
+              <p>Du bör nu se en utskrift som säger "Exempeldata"</p>
             </section>
           </div>
-
         </div>
       </div>
     </div>

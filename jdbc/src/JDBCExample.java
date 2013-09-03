@@ -5,21 +5,18 @@ import java.sql.Statement;
 
 public class JDBCExample {
     public static void main(String[] args) throws Exception {
-        Connection conn = null;
-        Statement stmt = null;
-            conn = DriverManager.getConnection("jdbc:mysql://localhost/webapp", "root", "");
-            stmt = conn.createStatement();
-            String sql;
-            sql = "SELECT id, name FROM Member";
-            ResultSet rs = stmt.executeQuery(sql);
-            while (rs.next()) {
-                int id = rs.getInt("id");
-                String first = rs.getString("name");
-                System.out.print("ID: " + id);
-                System.out.println(", First: " + first);
-            }
-            rs.close();
-            stmt.close();
-            conn.close();
+        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/jdbcexample", "mart", "mart");
+        Statement stmt = conn.createStatement();
+        String sql = "SELECT id, data FROM mytable";
+        ResultSet rs = stmt.executeQuery(sql);
+        while (rs.next()) {
+            int id = rs.getInt("id");
+            String first = rs.getString("data");
+            System.out.print("ID: " + id);
+            System.out.println(", Data: " + first);
+        }
+        rs.close();
+        stmt.close();
+        conn.close();
     }
 }
