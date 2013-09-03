@@ -12,11 +12,13 @@
       .bs-docs-sidenav.affix { top: -5px; }
       .top-banner { height: 40px; font-size: 30px; top-padding: 10px; text-align: center; }
       .menu { padding-top: 25px; }
-      .banner { background-color: #bbb; margin-bottom: -70px; margin-top: 0px; padding-top: 15px; box-shadow: 0px 8px 4px #888; }
+      .banner { background-color: #eee; margin-bottom: -70px; margin-top: 0px; padding-top: 15px; box-shadow: 0px 8px 4px #bbb; }
       .container { margin-top: 40px; }
-      .main-column { background-color: #ddd; border: 1px solid; border-color: #aaa; padding: 8px; margin-bottom: 40px; margin-top: 55px;  }
+      .main-column { background-color: #eee; border: 1px solid; border-color: #ccc; padding: 8px; margin-bottom: 40px; margin-top: 55px;  }
+      .active { font-weight: bold; background-color: #eee; }
+      .bs-docs-sidenav > li:first-child > a, .bs-docs-sidenav > li:last-child > a { -webkit-border-radius: 0; -moz-border-radius: 0; border-radius: 0; }
       section { padding-top: 0px; }
-      body { padding-top: 0px; background-color: #eee; }
+      body { padding-top: 0px; }
     </style>
   </head>
   <body data-spy="scroll" data-target=".bs-docs-sidebar">
@@ -29,7 +31,7 @@
     </section>
     <div class="container">
       <div class="row">
-        <div class="span4 bs-docs-sidebar menu">
+        <div class="span3 bs-docs-sidebar menu">
           <ul class="nav nav-list bs-docs-sidenav" data-spy="affix" data-offset-top="55">
             <li class='active'><a href="#preparations">Förberedelser</a></li>
             <li><a href="#webApp">1 - Webapp</a></li>
@@ -38,23 +40,28 @@
             <li><a href="#jdbc">4 - JDBC</a></li>
           </ul>
         </div>
-        <div class="span8">
+        <div class="span9">
           <div class="main-column">
             <section id="preparations">
-              <h1>Förberedelser</h1>
+              <div class="page-header">
+                <h1>Förberedelser</h1>
+              </div>
               <p>Innan vi sätter igång med hackandet så krävs lite förberedelser. Vissa av dessa har du säkert redan gjort, men man vet ju aldrig.</p>
               <p>Var och ett av följande fyra koncept kommer att presenteras med en liten text som sammanfattar vad det är, och sedan en laboration i steg för steg som känner på konceptet i fråga.</p>
               <p>Om du kör fast eller helt enkelt inte orkar göra labben själv (Även om det är rekommenderat) så finns färdig kod för var och ett av koncepten i var sin subfolder.</p>
-              <h5>I ) Installera Tomcat 7</h5>
+              <h5>I ) Get wget</h5>
+              <p>Har du inte wget så får du skaffa det, eller ladda ner filerna på något annat sätt</p>
+              <pre class="prettyprint"> $ open <a href="http://www.gnu.org/software/wget/">http://www.gnu.org/software/wget/</a></pre>
+              <h5>II ) Installera Tomcat 7</h5>
               <p>Apache Tomcat 7 är den <a href="http://en.wikipedia.org/wiki/Servlet_container">Servlet-container</a> som vi ska använda oss av för att köra vår webapp.</p>
-              <pre class="prettyprint"> > wget <a href="http://apache.mirror3.ip-only.net/tomcat/tomcat-7/v7.0.42/bin/apache-tomcat-7.0.42.zip">http://apache.mirror3.ip-only.net/tomcat/tomcat-7/v7.0.42/bin/apache-tomcat-7.0.42.zip</a> -O /tmp/tomcat7.zip
- > unzip /tmp/tomcat7.zip -d /opt/
- > ln -s /opt/apache-tomcat-7.0.42 /opt/tomcat7</pre>
+              <pre class="prettyprint"> $ wget <a href="http://apache.mirror3.ip-only.net/tomcat/tomcat-7/v7.0.42/bin/apache-tomcat-7.0.42.zip">http://apache.mirror3.ip-only.net/tomcat/tomcat-7/v7.0.42/bin/apache-tomcat-7.0.42.zip</a> -O /tmp/tomcat7.zip
+ $ unzip /tmp/tomcat7.zip -d /opt/
+ $ ln -s /opt/apache-tomcat-7.0.42 /opt/tomcat7</pre>
               <div class="alert alert-info"><p>Platsen där du installerar tomcat (I mitt fall i /opt/tomcat7) kommer att hänvisas till som $TOMCAT_HOME senare på denna sida.</p></div>
-              <h5>II ) Installera Eclipse</h5>
+              <h5>III ) Installera Eclipse</h5>
               <p>Eclipse är det IDE vi ska använda för att skriva och debugga kod.</p>
               <pre class="prettyprint"><a href="http://www.eclipse.org/downloads/">Ladda ner Eclipse for Java EE</a></pre>
-              <h5>III ) Installera MySQL</h5>
+              <h5>IV ) Installera MySQL</h5>
               <p>MySQL är den <a href="http://en.wikipedia.org/wiki/Relational_database_management_system">databas</a> som vi ska använda oss av för att köra vår webapp.</p>
               <pre class="prettyprint"><a href="http://dev.mysql.com/doc/refman/5.1/en/macosx-installation.html">Ladda ner och installera MySQL</a></pre>
             </section>
@@ -106,10 +113,10 @@ Content-Type: text/html; charset=UTF-8
               <h5>Example webserver</h5>
               <p>Det finns en naiv webserver under foldern "socket", öppna denna och kolla hur den funkar. Ändra gärna dess beteende på något sätt.</p>
               <p>Du kan antingen öppna projektet i Eclipse ("Import alreay existing project into workspace") eller editera filen med random texteditor.</p>
-              <pre class="prettyprint"> > cd socket
- > javac src/HttpServer.java
- > java -cp src HttpServer
- > open <a href=" http://localhost:8080/webapp/index.html">http://localhost:8080</a></pre>
+              <pre class="prettyprint"> $ cd socket
+ $ javac src/HttpServer.java
+ $ java -cp src HttpServer
+ $ open <a href=" http://localhost:8080/webapp/index.html">http://localhost:8080</a></pre>
               <div class="alert alert-info"><p>Servern avslutas inte av sig själv (Med mindre än att det sker någon form av undantag, den är inte skriven för att vara robust!), så för att avsluta den så får du antingen trycka Ctrl+C om du startade i terminalen eller klicka på den röda stoppknappen om du startade servern från Eclipse.</p></div>
             </section>
           </div>
@@ -128,7 +135,7 @@ Content-Type: text/html; charset=UTF-8
               <p>För att kunna använda oss av vår servlet-kod i vår webapp så måste den packas in i .war-filen. Den ska placeras under foldern WEB-INF/classes.</p>
               <p>Att lägga filen där räcker dock inte för att den ska anropas. Vår Servlet-klass måste mappas mot en viss URL genom en "Servlet mapping". Detta kan ske antingen genom att annotera klassen i fråga med @WebServlet eller genom att skriva in det i configurationsfilen web.xml. Vi ska använda oss av web.xml för att undvika Annotations-magin så mkt som möjligt!</p>
               <p>web.xml ska placeras i foldern WEB-INF/ inne i vår .war-fil</p>
-              <pre class="prettyprint"> > mkdir -p WEB-INF/classes
+              <pre class="prettyprint"> $ mkdir -p WEB-INF/classes
  > cp src/ExampleServlet.class WEB-INF/classes/
  > cp src/web.xml WEB-INF/
  > zip -r webapp.war WEB-INF
