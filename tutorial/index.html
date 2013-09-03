@@ -83,7 +83,7 @@
               <h5>IV ) Starta tomcat</h5>
               <pre class="prettyprint"> $ $TOMCAT_HOME}/bin/catalina.sh run</pre>
               <h5>V ) Du bör nu kunna se innehållet i en browser</h5>
-              <pre class="prettyprint">>> open <a href=" http://localhost:8080/webapp/index.html">http://localhost:8080/webapp/index.html</a></pre>
+              <pre class="prettyprint"> $ open <a href=" http://localhost:8080/webapp/index.html">http://localhost:8080/webapp/index.html</a></pre>
             </section>
           </div>
 
@@ -91,7 +91,7 @@
             <section id="webServer">
               <h1>2 - Webserver</h1>
               <p>En webserver är ett program som öppnar en <a href="http://en.wikipedia.org/wiki/Network_socket">socket</a> och lyssnar efter connections. När en klient ansluter så läser servern in ett request i form av en (<a href="http://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol">HTTP</a>-formatterad) textsträng och skriver tillbaka en response i form av en (<a href="http://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol">HTTP-</a>formatterad) textsträng till klienten.</p>
-              <p>Det viktiga att ta till sig här är att webservrar egentligen inte gör mer magiskt än att läsa in textsträngar och svara med textsträngar, och det är formatteringen på strängarna i fråga som gör att det är HTTP.</p>
+              <p>Det viktiga att ta till sig här är att webservrar egentligen inte gör mer magi än att läsa in textsträngar och svara med textsträngar. Det är formatteringen på strängarna i fråga som gör att det är HTTP.</p>
               <h5>HTTP-request</h5>
               <p>Ett HTTP-request består av en "Request-line" (METOD URI HTTPVERSION, Följt av newline, kodat som \r\n), ett godtyckligt antal "Headers" (Ett kolonseparerat namn/värde-par avslutat med en newline kodad som \r\n). När klienten inte har fler headers att skicka så skickas en tom rad (Kodad som \r\n) för av berätta för servern att man inte tänker skicka fler headers. Om man skickat headern "Content-length" så kan man nu skicka en godtycklig payload, om man t.ex. vill skicka upp något till servern.</p>
               <pre class="prettyprint">GET / HTTP/1.1
@@ -99,6 +99,7 @@ Host: en.wikipedia.org
 Connection: keep-alive
 Cache-Control: no-cache
 User-Agent: My imba web-browser
+Content-length: 666
 
 (Message body)</pre>
               <h5>HTTP-response</h5>
@@ -131,20 +132,20 @@ Content-Type: text/html; charset=UTF-8
               <p>Varje webapp som startas av containern får en "web context", som i Tomcats fall normalt sett nås under http://localhost:8080/webappens_name.</p>
               <p>Inom contexten så avgörs vad som ska hända med varje request genom "Servlet mappings". En Servlet är en speciell java-klass är byggd för att hantera request och responses. Servlet-objekten i fråga är inget som vi skapar ("new Servlet();") i vår egen kod, utan även det sköts av Containern som skapar upp objekt efter behov. Dessa Servlet-objekt överlever även requestet i fråga, och återanvänds vid efterföljande requests, även från helt andra klienter.</p>
               <p>Det enda som krävs för att en klass ska kunna användas som en Servlet är att den ärver (Direkt eller indirekt) från javax.servlet.http.HttpServlet. Denna klass finns inte med i standardbiblioteket (Den tillhör Java EE) och implementeras för sig av var och en av de Containrar som finns.</p>
-              <p>För att kunna kompilera vår Servlet-klass så måste vi peka ut för Eclipse (Eller för javac) var javax.servlet.http.HttpServlet är definierad. Det för man genom att lägga till den på classpathen i samband med kompileringen. I Eclipse så gör man det genom att lägga till en extern jar i projektets "Build path", för javac för man det genom att använda sig av parametern -cp.</p>
+              <p>För att kunna kompilera vår Servlet-klass så måste vi peka ut för Eclipse (Eller för javac) var javax.servlet.http.HttpServlet är definierad. Det gör man genom att lägga till den på classpathen i samband med kompileringen. I Eclipse så gör man det genom att lägga till en extern jar i projektets "Build path", för javac för man det genom att använda sig av parametern -cp.</p>
               <pre class="prettyprint"> > cd servlet
  > javac -cp ${TOMCAT_HOME}/lib/servlet-api.jar src/ExampleServlet.java</pre>
               <p>För att kunna använda oss av vår servlet-kod i vår webapp så måste den packas in i .war-filen. Den ska placeras under foldern WEB-INF/classes.</p>
               <p>Att lägga filen där räcker dock inte för att den ska anropas. Vår Servlet-klass måste mappas mot en viss URL genom en "Servlet mapping". Detta kan ske antingen genom att annotera klassen i fråga med @WebServlet eller genom att skriva in det i configurationsfilen web.xml. Vi ska använda oss av web.xml för att undvika Annotations-magin så mkt som möjligt!</p>
               <p>web.xml ska placeras i foldern WEB-INF/ inne i vår .war-fil</p>
               <pre class="prettyprint"> $ mkdir -p WEB-INF/classes
- > cp src/ExampleServlet.class WEB-INF/classes/
- > cp src/web.xml WEB-INF/
- > zip -r webapp.war WEB-INF
- > cp webapp.war ${TOMCAT_HOME}/webapps
- > ${TOMCAT_HOME}/bin/catalina.sh run</pre>
+ $ cp src/ExampleServlet.class WEB-INF/classes/
+ $ cp src/web.xml WEB-INF/
+ $ zip -r webapp.war WEB-INF
+ $ cp webapp.war ${TOMCAT_HOME}/webapps
+ $ ${TOMCAT_HOME}/bin/catalina.sh run</pre>
               <p>Du bör nu kunna se svaret från din Servlet i en browser</p>
-              <pre class="prettyprint"> > open <a href="http://localhost:8080/webapp/ExampleServlet">http://localhost:8080/webapp/ExampleServlet</a></pre>
+              <pre class="prettyprint"> $ open <a href="http://localhost:8080/webapp/ExampleServlet">http://localhost:8080/webapp/ExampleServlet</a></pre>
             </section>
           </div>
 
@@ -158,7 +159,7 @@ Content-Type: text/html; charset=UTF-8
               <h5>II ) Skriv en snutt databaskod</h5>
               <p>Se jdbc/src/JDBCExample.java</p>
               <h5>III ) Skapa databasen "jdbcexample"</h5>
-              <pre class="prettyprint"> > mysql -u root
+              <pre class="prettyprint"> $ mysql -u root
  mysql> create database jdbcexample;
  mysql> GRANT ALL PRIVILEGES ON jdbcexample.* TO
  mysql>   -->  'mart'@'%' IDENTIFIED BY 'mart';
