@@ -21,11 +21,11 @@
   </head>
   <body data-spy="scroll" data-target=".bs-docs-sidebar">
     <section class="banner">
-        <div class="top-banner">
-          <p class="strokeme">
-            Webprogrammering i Java - Grundläggande koncept
-          </p>
-        </div>
+      <div class="top-banner">
+        <p class="strokeme">
+          Webprogrammering i Java - Grundläggande koncept
+        </p>
+      </div>
     </section>
     <div class="container">
       <div class="row">
@@ -100,7 +100,7 @@ Content-Length: 666
 Content-Type: text/html; charset=UTF-8
 
 (Message body)
-</pre>
+              </pre>
               <h5>Example webserver</h5>
               <p>Det finns en naiv webserver under foldern "socket", öppna denna och kolla hur den funkar. Ändra gärna dess beteende på något sätt.</p>
               <p>Du kan antingen öppna projektet i Eclipse ("Import alreay existing project into workspace") eller editera filen med random texteditor.</p>
@@ -137,48 +137,34 @@ Content-Type: text/html; charset=UTF-8
             </section>
           </div>
 
+          <div class="main-column">
             <section id="jdbc">
-              <div class="page-header">
-                <h1>Global settings</h1>
-            </div>
-            
-            <h3>Requires HTML5 doctype</h3>
-            <p>Bootstrap makes use of certain HTML elements and CSS properties that require the use of the HTML5 doctype. Include it at the beginning of all your projects.</p>
-          <pre class="prettyprint linenums"><ol class="linenums"><li class="L0"><span class="dec">&lt;!DOCTYPE html&gt;</span></li><li class="L1"><span class="tag">&lt;html</span><span class="pln"> </span><span class="atn">lang</span><span class="pun">=</span><span class="atv">"en"</span><span class="tag">&gt;</span></li><li class="L2"><span class="pln">  ...</span></li><li class="L3"><span class="tag">&lt;/html&gt;</span></li></ol></pre>
-          
-          <h3>Typography and links</h3>
-            <p>Bootstrap sets basic global display, typography, and link styles. Specifically, we:</p>
-            <ul>
-              <li>Remove <code>margin</code> on the body</li>
-              <li>Set <code>background-color: white;</code> on the <code>body</code></li>
-              <li>Use the <code>@baseFontFamily</code>, <code>@baseFontSize</code>, and <code>@baseLineHeight</code> attributes as our typographic base</li>
-              <li>Set the global link color via <code>@linkColor</code> and apply link underlines only on <code>:hover</code></li>
-            </ul>
-            <p>These styles can be found within <strong>scaffolding.less</strong>.</p>
-          </section>
+              <h1>4 - JDBC</h1>
+              <p><a href="http://en.wikipedia.org/wiki/Java_Database_Connectivity">JDBC</a> är en standard för att kommunicera med en databas från javakod. Det är ett standardiserat interface, som varje databasvendor i sin tur implementerar i form av en "JDBC Driver".</p>
+              <p>För att använda sig av denna driver så krävs lite handpåläggning i form av:</p>
+              <h5>I ) Ladda ner en lämplig JDBC-driver.</h5>
+              <p>Ladda ner en JDBC-implementation (S.k. "JDBC-Driver") för din databas. I vårt fall <a href="http://dev.mysql.com/downloads/connector/j">"Connector/J" från dev.mysql</a></p>
+              <h5>II ) Skriv en snutt databaskod</h5>
+              <pre class="prettyprint"></pre>
+              <h3>Requires HTML5 doctype</h3>
+              <p>Bootstrap makes use of certain HTML elements and CSS properties that require the use of the HTML5 doctype. Include it at the beginning of all your projects.</p>
+              <pre class="prettyprint linenums"><ol class="linenums"><li class="L0"><span class="dec">&lt;!DOCTYPE html&gt;</span></li><li class="L1"><span class="tag">&lt;html</span><span class="pln"> </span><span class="atn">lang</span><span class="pun">=</span><span class="atv">"en"</span><span class="tag">&gt;</span></li><li class="L2"><span class="pln">  ...</span></li><li class="L3"><span class="tag">&lt;/html&gt;</span></li></ol></pre>
+              
+              <h3>Typography and links</h3>
+              <p>Bootstrap sets basic global display, typography, and link styles. Specifically, we:</p> <!--  -->
+              <ul>
+                <li>Remove <code>margin</code> on the body</li>
+                <li>Set <code>background-color: white;</code> on the <code>body</code></li>
+                <li>Use the <code>@baseFontFamily</code>, <code>@baseFontSize</code>, and <code>@baseLineHeight</code> attributes as our typographic base</li>
+                <li>Set the global link color via <code>@linkColor</code> and apply link underlines only on <code>:hover</code></li>
+              </ul>
+              <p>These styles can be found within <strong>scaffolding.less</strong>.</p>
+            </section>
+          </div>
 
-          <section id="webApp">
-            <div class="page-header">
-              <h1>Global settings</h1>
-            </div>
-            
-            <h3>Requires HTML5 doctype</h3>
-            <p>Bootstrap makes use of certain HTML elements and CSS properties that require the use of the HTML5 doctype. Include it at the beginning of all your projects.</p>
-          <pre class="prettyprint linenums"><ol class="linenums"><li class="L0"><span class="dec">&lt;!DOCTYPE html&gt;</span></li><li class="L1"><span class="tag">&lt;html</span><span class="pln"> </span><span class="atn">lang</span><span class="pun">=</span><span class="atv">"en"</span><span class="tag">&gt;</span></li><li class="L2"><span class="pln">  ...</span></li><li class="L3"><span class="tag">&lt;/html&gt;</span></li></ol></pre>
-          
-          <h3>Typography and links</h3>
-            <p>Bootstrap sets basic global display, typography, and link styles. Specifically, we:</p>
-            <ul>
-              <li>Remove <code>margin</code> on the body</li>
-              <li>Set <code>background-color: white;</code> on the <code>body</code></li>
-              <li>Use the <code>@baseFontFamily</code>, <code>@baseFontSize</code>, and <code>@baseLineHeight</code> attributes as our typographic base</li>
-              <li>Set the global link color via <code>@linkColor</code> and apply link underlines only on <code>:hover</code></li>
-            </ul>
-            <p>These styles can be found within <strong>scaffolding.less</strong>.</p>
-          </section>
         </div>
-</div>
       </div>
     </div>
-  </body>
+</div>
+</body>
 </html>
