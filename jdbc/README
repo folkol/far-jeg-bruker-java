@@ -1,0 +1,5 @@
+Build with:
+javac -cp lib/mysql-connector-java-5.1.26-bin.jar src/JDBCExample.java
+
+Run with:
+java -cp lib/mysql-connector-java-5.1.26-bin.jar:src JDBCExample
