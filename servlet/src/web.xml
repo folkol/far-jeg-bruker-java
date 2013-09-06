@@ -5,7 +5,7 @@
   
   <servlet>
     <display-name>Example Servlet</display-name>
-    <servlet-name>Exampleservlet</servlet-name>
+    <servlet-name>ExampleServlet</servlet-name>
     <servlet-class>ExampleServlet</servlet-class>
   </servlet>
   
