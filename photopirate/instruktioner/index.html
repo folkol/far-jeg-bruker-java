@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Webprogrammering i Java - Grundläggande koncept</title>
+    <script src="assets/jquery.min.js"></script>
+    <link rel="stylesheet" href="assets/bootstrap.css">
+    <link rel="stylesheet" href="assets/docs.css">
+    <script src="assets/bootstrap.js"></script>
+    <style>
+      .strokeme { color: white; text-shadow: -1px -1px 0 #888, 1px -1px 0 #888, -1px 1px 0 #888, 1px 1px 0 #888; }
+      .bs-docs-sidenav.affix { top: -5px; }
+      .top-banner { height: 40px; font-size: 30px; top-padding: 10px; text-align: center; }
+      .menu { padding-top: 25px; }
+      .banner { background-color: #eee; margin-bottom: -70px; margin-top: 0px; padding-top: 15px; box-shadow: 0px 8px 4px #bbb; }
+      .container { margin-top: 40px; }
+      .main-column { background-color: #fff; border: 1px solid; border-color: #ccc; padding: 8px; margin-bottom: 40px; margin-top: 55px;  }
+      .active { font-weight: bold; background-color: #eee; }
+      .bs-docs-sidenav > li:first-child > a, .bs-docs-sidenav > li:last-child > a { -webkit-border-radius: 0; -moz-border-radius: 0; border-radius: 0; }
+      pre { background-color: #444; color: #0d2; }
+      @media (min-width: 1200px) { .bs-docs-sidenav { width: 228px; } }
+      h1 { color: #5a5a5a; }
+      ul { background-color: #eee; }
+      section { padding-top: 0px; }
+      body { padding-top: 0px; background-color: #eee; }
+    </style>
+  </head>
+  <body data-spy="scroll" data-target=".bs-docs-sidebar">
+    <section class="banner">
+      <div class="top-banner">
+        <p class="strokeme">
+          Webprogrammering i Java - Grundläggande koncept
+        </p>
+      </div>
+    </section>
+    <div class="container">
+      <div class="row">
+        <div class="span3 bs-docs-sidebar menu">
+          <ul class="nav nav-list bs-docs-sidenav" data-spy="affix" data-offset-top="55">
+            <li class='active'><a href="#goal">Vårt mål</a></li>
+          </ul>
+        </div>
+
+        <div class="span9">
+          <div class="main-column">
+            <section id="goal">
+              <h1>Målet</h1>
+              <p>Vi ska producera en webapp (photopirate.war) som vi kan köra genom att deploya i Tomcat.</p>
+              <p>Förlagan är Welles fina photochallenge-sida (Anledningen till att jobba efter en förlaga är att vi kan lägga mer tid på att hacka än att fundera på vad vi ska hacka ihop).</p>
+              <h5>I ) Get wget</h5>
+              <p>Har du inte wget så får du skaffa det, eller ladda ner filerna på något annat sätt</p>
+              <pre class="prettyprint"> $ open <a href="http://www.gnu.org/software/wget/">http://www.gnu.org/software/wget/</a></pre>
+              <h5>II ) Installera Tomcat 7</h5>
+              <p>Apache Tomcat 7 är den <a href="http://en.wikipedia.org/wiki/Servlet_container">Servlet-container</a> som vi ska använda oss av för att köra vår webapp.</p>
+              <pre class="prettyprint"> $ wget <a href="http://apache.mirror3.ip-only.net/tomcat/tomcat-7/v7.0.42/bin/apache-tomcat-7.0.42.zip">http://apache.mirror3.ip-only.net/tomcat/tomcat-7/v7.0.42/bin/apache-tomcat-7.0.42.zip</a> -O /tmp/tomcat7.zip
+ $ unzip /tmp/tomcat7.zip -d /opt/
+ $ ln -s /opt/apache-tomcat-7.0.42 /opt/tomcat7
+ $ chmod +x ${TOMCAT_HOME}/bin/*</pre>
+              <div class="alert alert-info"><p>Platsen där du installerar tomcat (I mitt fall i /opt/tomcat7) kommer att hänvisas till som $TOMCAT_HOME senare på denna sida.</p></div>
+              <h5>III ) Installera Eclipse</h5>
+              <p>Eclipse är det IDE vi ska använda för att skriva och debugga kod.</p>
+              <pre class="prettyprint"><a href="http://www.eclipse.org/downloads/">Ladda ner Eclipse for Java EE</a></pre>
+              <h5>IV ) Installera MySQL</h5>
+              <p>MySQL är den <a href="http://en.wikipedia.org/wiki/Relational_database_management_system">databas</a> som vi ska använda oss av för att köra vår webapp.</p>
+              <pre class="prettyprint"><a href="http://dev.mysql.com/doc/refman/5.1/en/macosx-installation.html">Ladda ner och installera MySQL</a></pre>
+            </section>
+          </div>
+
+        </div>
+      </div>
+    </div>
+</div>
+</body>
+</html>
