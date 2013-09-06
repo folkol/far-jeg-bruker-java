@@ -151,8 +151,8 @@ public class FileUploadServlet extends HttpServlet {
               <div class="alert alert-info"><p>WEB-INF/web.xml är vår webapps "deployment descriptor", vilken berättar vad för managed resources vår app har, och var dessa resurser finns. (Det går även att configurera detta i kod m.h.a. java @Annotations, men vi kommer bara att använda oss av web.xml för tydlighets skull).</p></div>
 
               <h5>III ) Spara faktiskt ner filen som skickas till disk</h5>
-              <p>Filinformationen som vi skickade med till doPost() ovan kastas helt enkelt bort av vår servlet. Nu ska vi skriva kod för att faktiskt spara ner den till disk.</p>
-              <p>Filuppladdning med browsers sker genom requests av typen multipart/form-data, vilket innebär att requestbodyn innehåller ett antal delar (parts) separerade av boundaries.</p>
+              <p>Filinformationen som vi skickade till doPost() ovan kastas helt enkelt bort av vår servlet. Nu ska vi skriva kod för att faktiskt spara ner den till disk.</p>
+              <p>Filuppladdning med browsers sker genom requests av typen multipart/form-data, vilket innebär att requestbodyn innehåller ett antal del-requests (parts) som var och en har headers och body som en vanligt request. Dessa parts är separerade av boundaries.</p>
               <p>Ett generellt multipart-request ser ut något i den här stilen:</p>
               <pre class="prettyprint">POST /photopirate/upload_file HTTP/1.1
 Content-Length: 1234
@@ -162,7 +162,7 @@ Content-Type: multipart/form-data; boundary=---ANY_STRING_NOT_PART_OF_THE_MESSAG
 Content-Disposition: form-data; name="file"; filename="Screen shot 2013-06-19 at 2.34.59 PM.png"
 Content-Type: image/png
 
-
+(Body here)
 ---ANY_STRING_NOT_PART_OF_THE_MESSAGE_BODY---
 Content-Disposition: form-data; name="submit"
 
@@ -177,9 +177,12 @@ public class FileUploadServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException, IOException
     {
+        String randomString = UUID.randomUUID().toString() + ".jpg";
+        File imageDirectory = new File("/opt/tomcat/webapps/photopirate/bilder/");
+        if (!imageDirectory.exists()) imageDirectory.mkdir();
+        File filename = new File(imageDirectory, randomString);
+
         InputStream in = req.getPart("file").getInputStream();
-        String randomString = UUID.randomUUID().toString();
-        File filename = new File("/opt/tomcat/webapps/photopirate/" + randomString + ".jpg");
         FileOutputStream out = new FileOutputStream(filename);
 
         int read = 0;
@@ -189,7 +192,6 @@ public class FileUploadServlet extends HttpServlet {
 
 }</pre>
               <p>Detta använder sig av standardklassen UUID för att generera ett förhoppningsvis unikt filnamn. Om man vill så kan man komma åt det ursprungliga filnamnet från clientens fil.</p>
-              <p>Om allt gick bra så bör man nu kunna se filen som man laddade upp på <a href="http://localhost:8080/photopirate/GENERATED_ID.jpg">http://localhost:8080/photopirate/bild.jpg</a></p>
               <div class="alert alert-info"><p>Implementationen ovan är naturligtvis under all kritik, en "riktig" filuppladdningsservlet hade naturligtvis fångat alla förväntade undantag, hantera olika mimetyper och dessutom skrivit ner filinformationen på en plats avsett för detta, och inte rakt ner i den explodera webappen i tomcats deploy-folder, men det skiter vi i just nu!</p></div>
               <h5>IV ) Redirect efter uppladdning</h5>
               <p>Efter ett request så visar browsern upp svaret, så även ett request från en form-submit.</p>
@@ -216,22 +218,67 @@ GET /photopirate                       &lt;-- Browsern följer redirecten
             <section id="phase2">
               <h1>3 ) "Dynamisk" html</h1>
               <p>En hemsida som alltid ser likadan ut passar ju inte så fasligt bra för ett så fint community som photopirate. Nu ska vi visa hur vi på ett MVC-inspirerat manér renderar dynamisk html från en viss sida.</p>
-              <p>Grunden i dynamisk html med Java är att man kör lite kod som räknar ut vad som ska visas, och sedan låter (forward enligt ovan) en vy rendera en sida utefter denna data.</p>
-              <p>En separation of concerns på detta vis är fördelaktigt på många vis, inte minst dela upp "logik" och "utseende" för att hålla koden tydlig, men även för återanvändning av kod när man t.ex. vill ha en viss rendering av sidan för Desktop och en annan för mobile (Man vill ofta använda sig av samma eller liknanade data i bägge fallen).</p>
-              <p>En vy-teknologi som används i Java är JSP:er, det är en textfil som i samband med ett request läses in av Containern och översätts till en servlet som sedan renderar output på vanligt vis (request.getOutputStream().write()).</p>
+              <p>Nu ska vi istället för att använda oss av en servlet istället för en statisk html-fil som vår index.html.</p>
               <p>I detta exempel så ska vi ersätta photopirates framsida med en dynamiskt genererad sida. (Det är ju synd att bara kasta bort vårt fina formulär, så vi döper helt enkelt om index.html till upload.html innan vi böjar på vår "dynamiska" index.html</p>
               <pre class="prettyprint">Döp om index.html till upload.html</pre>
               <h5>I - Skapa en ny servlet som ska användas på index.html</h5>
+              <p>Här ska vi skapa en servlet som renderar en html-sida och mappa in den under index.html</p>
+              <p>Så här kan doGet(..) se ut i vår IndexServlet:</p>
+              <pre class="prettyprint">Date dynamiskData = new Date();
+
+req.setAttribute("data", dynamiskData);
+req.getRequestDispatcher("/indexview").forward(req, resp);
+              <h5>II ) MVC</h5>
+              <p>Det är av många anledningen en bra idé att dela upp hanteringen av data från utskriften, sättet man gör det på i Java EE är att ha en servlet som hanterar datan, som sedan skickar vidare informationen till en annan servlet som bara skriver ut den.</p>
+              <p>Detta gör man genom att sätta attributes på requestet och sedan forward:a till nästa servlet. Skapa en vy-servlet, och flytta utskriftdelen in i den andra servleten.</p>
+              <pre class="prettyprint">IndexViewServlet:
+String data = req.getAttribute("data").toString();
+
+ServletOutputStream out = resp.getOutputStream();
+out.write("&lt;!DOCTYPE html&gt;".getBytes());
+out.write("&lt;html&gt;".getBytes());
+out.write("  &lt;body&gt;".getBytes());
+out.write("    &lt;form action='upload_file' method='post'".getBytes());
+out.write("             enctype='multipart/form-data'&gt;".getBytes());
+out.write("      &lt;label for='file'&gt;Filename:&lt;/label&gt;".getBytes());
+out.write("      &lt;input type='file' name='file' id='file'&gt;&lt;br&gt;".getBytes());
+out.write("      &lt;input type='submit' name='submit' value='Submit'&gt;".getBytes());
+out.write("     &lt;/form&gt;".getBytes());
+out.write(String.format("&lt;p&gt;Sidan genererades: %s&lt;/p&gt;", data).getBytes());
+out.write("&lt;/p&gt;".getBytes());
+out.write("  &lt;/body&gt;".getBytes());
+out.write("&lt;/html&gt;".getBytes());</pre>
+
+
+
+
+
               <p>Varje MVC-sida har bland annat en servlet för att hantera logiken bakom att hämta data och att paketera datan i det format vy:n förväntar sig, och sedan forward:a till vyn i fråga. "Controller"-delen i Java MVC är en Servlet. Så nu ska vi bygga vår index-servlet!</p>
-              <pre class="prettyprint">public class IndexServlet extends HttpServlet {
 
-        @Override
-        protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-                req.setAttribute("data", "'Dynamisk' data");
-                req.getRequestDispatcher("index.jsp").forward(req, resp);
-        }
 
-}</pre>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+              <p>En separation of concerns på detta vis är fördelaktigt på många vis, inte minst dela upp "logik" och "utseende" för att hålla koden tydlig, men även för återanvändning av kod när man t.ex. vill ha en viss rendering av sidan för Desktop och en annan för mobile (Man vill ofta använda sig av samma eller liknanade data i bägge fallen).</p>
+              <p>En vy-teknologi som används i Java är JSP:er, det är en textfil som i samband med ett request läses in av Containern och översätts till en servlet som sedan renderar output på vanligt vis (request.getOutputStream().write()).</p>
+
+
+
+
+
               <p>Denna servlet sätter lite "dynamisk" data i requestattributet "data" och forwardar till index.jsp. Index.jsp finns inte ännu, den ska vi skapa strax!</p>
               <p>Det räcker som sagt inte med att bara skapa Servlet-klassen i fråga, den måste mappas in under ett url-pattern. Det kan göras i källkoden med annotations, men i denna labbkurs så håller vi oss till web.xml.</p>
             <pre class="prettyprint">web.xml:

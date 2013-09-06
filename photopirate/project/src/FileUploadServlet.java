@@ -20,8 +20,6 @@ public class FileUploadServlet extends HttpServlet {
         if (!imageDirectory.exists()) imageDirectory.mkdir();
         File filename = new File(imageDirectory, randomString);
 
-        System.out.println(filename);
-
         InputStream in = req.getPart("file").getInputStream();
         FileOutputStream out = new FileOutputStream(filename);
 

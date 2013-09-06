@@ -15,14 +15,25 @@
     <servlet-class>IndexServlet</servlet-class>
   </servlet>
 
+  <servlet>
+    <display-name>Index View Servlet</display-name>
+    <servlet-name>IndexViewServlet</servlet-name>
+    <servlet-class>IndexViewServlet</servlet-class>
+  </servlet>  
+
   <servlet-mapping>
     <servlet-name>FileUploadServlet</servlet-name>
     <url-pattern>/upload_file</url-pattern>
   </servlet-mapping>
-  
+
   <servlet-mapping>
     <servlet-name>IndexServlet</servlet-name>
     <url-pattern>/index.html</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>IndexViewServlet</servlet-name>
+    <url-pattern>/indexview</url-pattern>
   </servlet-mapping>
 
 </web-app>
