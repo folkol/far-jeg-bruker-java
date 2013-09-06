@@ -13,6 +13,6 @@ public class IndexServlet extends HttpServlet {
         Date dynamiskData = new Date();
 
         req.setAttribute("data", dynamiskData);
-        req.getRequestDispatcher("/indexview").forward(req, resp);
+        req.getRequestDispatcher("/index.jsp").forward(req, resp);
     }
 }
