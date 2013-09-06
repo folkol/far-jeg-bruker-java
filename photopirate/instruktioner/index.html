@@ -248,7 +248,7 @@ out.write("&lt;/html&gt;".getBytes());</pre>
               <h5>III ) JSP</h5>
               <p>Istället för att skriva en servlet med en massa out.write()-rader så kan man använda sig av en JSP. En JSP är en template för en sida, som av containern översätts från HTML till en servlet med en massa out.write()-statements.</p>
               <p>I en JSP så kan man adressera request attibutes (T.ex. "data" i vår tidigare servlet) genom EL (Expression language).</p>
-              <p>Uttrycket req.getAttribute("data"); skrivs med EL som ${data}</p>
+              <p>Uttrycket req.getAttribute("data"); skrivs med EL som ${data} och req.getContextPath() skrivs som ${pageContext.request.contextPath}</p>
               <p>Här kommer vår vy från ovan i JSP-format:</p>
               <pre class="prettyprint">&lt;!DOCTYPE html&gt;
 &lt;html&gt;

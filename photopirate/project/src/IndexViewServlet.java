@@ -16,7 +16,7 @@ public class IndexViewServlet extends HttpServlet {
         out.write("<!DOCTYPE html>".getBytes());
         out.write("<html>".getBytes());
         out.write("<body>".getBytes());
-        out.write("  <a href='/photopirate/upload.html''>Ladda upp en fil</a>".getBytes());
+        out.write("  <a href='/photopirate/upload.html'>Ladda upp en fil</a>".getBytes());
         out.write(String.format("  <p>Sidan genererades: %s</p>", data).getBytes());
         out.write("  </p>".getBytes());
         out.write("  </body>".getBytes());
