@@ -4,8 +4,8 @@
          version="3.0"> 
   
   <servlet>
-    <display-name>ExampleServlet</display-name>
-    <servlet-name>Example servlet</servlet-name>
+    <display-name>Example Servlet</display-name>
+    <servlet-name>Exampleservlet</servlet-name>
     <servlet-class>ExampleServlet</servlet-class>
   </servlet>
   
