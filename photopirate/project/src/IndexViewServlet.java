@@ -15,15 +15,10 @@ public class IndexViewServlet extends HttpServlet {
         ServletOutputStream out = resp.getOutputStream();
         out.write("<!DOCTYPE html>".getBytes());
         out.write("<html>".getBytes());
-        out.write("  <body>".getBytes());
-        out.write("    <form action='upload_file' method='post'".getBytes());
-        out.write("          enctype='multipart/form-data'>".getBytes());
-        out.write("      <label for='file'>Filename:</label>".getBytes());
-        out.write("      <input type='file' name='file' id='file'><br>".getBytes());
-        out.write("      <input type='submit' name='submit' value='Submit'>".getBytes());
-        out.write("     </form>".getBytes());
-        out.write(String.format("<p>Sidan genererades: %s</p>", data).getBytes());
-        out.write("</p>".getBytes());
+        out.write("<body>".getBytes());
+        out.write("  <a href='/photopirate/upload.html''>Ladda upp en fil</a>".getBytes());
+        out.write(String.format("  <p>Sidan genererades: %s</p>", data).getBytes());
+        out.write("  </p>".getBytes());
         out.write("  </body>".getBytes());
         out.write("</html>".getBytes());
     }

@@ -233,20 +233,16 @@ req.getRequestDispatcher("/indexview").forward(req, resp);</pre>
               <p>Det är av många anledningar en bra idé att dela upp hanteringen av data från utskriften, sättet man gör det på i Java EE är att ha en servlet som hanterar datan, som sedan skickar vidare informationen till en annan servlet (Eller JSP, se nedan) som bara skriver ut den.</p>
               <p>Detta gör man genom att sätta attributes på requestet och sedan forward:a till nästa servlet. Skapa en vy-servlet, och flytta utskriftdelen in i den andra servleten.</p>
               <pre class="prettyprint">IndexViewServlet:
+
 String data = req.getAttribute("data").toString();
 
 ServletOutputStream out = resp.getOutputStream();
 out.write("&lt;!DOCTYPE html&gt;".getBytes());
 out.write("&lt;html&gt;".getBytes());
 out.write("&lt;body&gt;".getBytes());
-out.write("&lt;form action='upload_file' method='post'".getBytes());
-out.write("         enctype='multipart/form-data'&gt;".getBytes());
-out.write("  &lt;label for='file'&gt;Filename:&lt;/label&gt;".getBytes());
-out.write("  &lt;input type='file' name='file' id='file'&gt;&lt;br&gt;".getBytes());
-out.write("  &lt;input type='submit' name='submit' value='Submit'&gt;".getBytes());
-out.write("&lt;/form&gt;".getBytes());
-out.write(String.format("&lt;p&gt;Sidan genererades: %s&lt;/p&gt;", data).getBytes());
-out.write("&lt;/p&gt;".getBytes());
+out.write("  &lt;a href='/upload.html''&gt;Ladda upp en fil&lt;/a&gt;".getBytes());
+out.write(String.format("  &lt;p&gt;Sidan genererades: %s&lt;/p&gt;", data).getBytes());
+out.write("  &lt;/p&gt;".getBytes());
 out.write("  &lt;/body&gt;".getBytes());
 out.write("&lt;/html&gt;".getBytes());</pre>
               <h5>III ) JSP</h5>
@@ -256,15 +252,12 @@ out.write("&lt;/html&gt;".getBytes());</pre>
               <p>Här kommer vår vy från ovan i JSP-format:</p>
               <pre class="prettyprint">&lt;!DOCTYPE html&gt;
 &lt;html&gt;
-  &lt;body&gt;
-    &lt;form action='upload_file' method='post' enctype='multipart/form-data'&gt; 
-      &lt;label for='file'&gt;Filename:&lt;/label&gt;
-      &lt;input type='file' name='file' id='file'&gt;&lt;br&gt;
-      &lt;input type='submit' name='submit' value='Submit'&gt;
-    &lt;/form&gt;
-    &lt;p&gt;Sidan genererades: ${data}&lt;/p&gt;
-  &lt;/body&gt;
-&lt;/html&gt;</pre>
+&lt;body&gt;
+  &lt;a href='${pageContext.request.contextPath}/upload.html'&gt;Ladda upp en fil&lt;/a&gt;
+  &lt;p&gt;Sidan genererades: ${data}&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
               <p>Som du ser så är det ytterst likt den färdiga html:en. Detta är anledningen till att man oftast väljer en JSP över en Servlet för själva renderingen.</p>
               <p>(Men som vi redan sagt, JSP:n översätts till en servlet som sedan skriver outputen på samma sätt som vi gjorde i vår IndexViewServlet ovan. Man kan sitta på den översatta filen i ${TOMCAT}/work/Catalina/localhost/photopirate/org/apache/jsp/ om man vill se hur den ser ut)</p>
             </section>
