@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Webprogrammering i Java - Grundläggande koncept</title>
+    <title>Webprogrammering i Java - Photopirate!</title>
     <script src="assets/jquery.min.js"></script>
     <link rel="stylesheet" href="assets/bootstrap.css">
     <link rel="stylesheet" href="assets/docs.css">
@@ -29,7 +29,7 @@
     <section class="banner">
       <div class="top-banner">
         <p class="strokeme">
-          Webprogrammering i Java - Grundläggande koncept
+          Webprogrammering i Java - Photopirate
         </p>
       </div>
     </section>
@@ -38,37 +38,163 @@
         <div class="span3 bs-docs-sidebar menu">
           <ul class="nav nav-list bs-docs-sidenav" data-spy="affix" data-offset-top="55">
             <li class='active'><a href="#goal">Vårt mål</a></li>
+            <li><a href="#environment">Fas 1 - Arbetsmiljö</a></li>
+            <li><a href="#phase1">Fas 1 - Filuppladdning</a></li>
           </ul>
         </div>
-
         <div class="span9">
+
           <div class="main-column">
             <section id="goal">
               <h1>Målet</h1>
-              <p>Vi ska producera en webapp (photopirate.war) som vi kan köra genom att deploya i Tomcat.</p>
+              <p>Vi ska, i etapper, producera en webapp (photopirate.war) som vi kan deploya i Tomcat.</p>
               <p>Förlagan är Welles fina photochallenge-sida (Anledningen till att jobba efter en förlaga är att vi kan lägga mer tid på att hacka än att fundera på vad vi ska hacka ihop).</p>
-              <h5>I ) Get wget</h5>
-              <p>Har du inte wget så får du skaffa det, eller ladda ner filerna på något annat sätt</p>
-              <pre class="prettyprint"> $ open <a href="http://www.gnu.org/software/wget/">http://www.gnu.org/software/wget/</a></pre>
-              <h5>II ) Installera Tomcat 7</h5>
-              <p>Apache Tomcat 7 är den <a href="http://en.wikipedia.org/wiki/Servlet_container">Servlet-container</a> som vi ska använda oss av för att köra vår webapp.</p>
-              <pre class="prettyprint"> $ wget <a href="http://apache.mirror3.ip-only.net/tomcat/tomcat-7/v7.0.42/bin/apache-tomcat-7.0.42.zip">http://apache.mirror3.ip-only.net/tomcat/tomcat-7/v7.0.42/bin/apache-tomcat-7.0.42.zip</a> -O /tmp/tomcat7.zip
- $ unzip /tmp/tomcat7.zip -d /opt/
- $ ln -s /opt/apache-tomcat-7.0.42 /opt/tomcat7
- $ chmod +x ${TOMCAT_HOME}/bin/*</pre>
-              <div class="alert alert-info"><p>Platsen där du installerar tomcat (I mitt fall i /opt/tomcat7) kommer att hänvisas till som $TOMCAT_HOME senare på denna sida.</p></div>
-              <h5>III ) Installera Eclipse</h5>
-              <p>Eclipse är det IDE vi ska använda för att skriva och debugga kod.</p>
-              <pre class="prettyprint"><a href="http://www.eclipse.org/downloads/">Ladda ner Eclipse for Java EE</a></pre>
-              <h5>IV ) Installera MySQL</h5>
-              <p>MySQL är den <a href="http://en.wikipedia.org/wiki/Relational_database_management_system">databas</a> som vi ska använda oss av för att köra vår webapp.</p>
-              <pre class="prettyprint"><a href="http://dev.mysql.com/doc/refman/5.1/en/macosx-installation.html">Ladda ner och installera MySQL</a></pre>
+            </section>
+          </div>
+
+          <div class="main-column">
+            <section id="environment">
+              <h1>1 ) Arbetsmiljö</h1>
+              <p>För att slippa packa ihop .war-filen och kopiera den till Tomcat var gång vi gjort en ändring så kommer vi att sätta upp arbetsmiljön så att vi bara behöver spara i Eclipse för att ändringarna ska slå igenom.</p>
+              <p>För att uppnå detta så ställer vi in Tomcat att scanna uppackade ("exploderade") webappar och ladda om dem när en ändring sker, i kombination med att vi istället för att kopiera vår webapp till Tomcat så lägger vi till en mjuklänk från den plats vi jobbar i till ${TOMCAT_HOME}/webapps.</p>
+              <h5>I ) Ställ in Tomcat</h5>
+              <pre class="prettyprint"> $ emacs ${TOMCAT_HOME}/conf/context.xml
+
+ ...
+ &lt;Context reloadable="true"&gt;
+ ...
+
+ $ mkdir -p ${PROJECT_LOCATION}/webapp/WEB-INF/classes
+ $ ln -s ${PROJECT_LOCATION}/webapp ${TOMCAT_HOME}/webapps/photopirate</pre>
+              <div class="alert alert-info"><p>Tomcat kan ställas in för att följa mjuklänkar eller inte, default i min version var att följa. Om det råkar vara så att din inte följer så sätt allowLinking="true" för din Context (Eller för alla Contexter...)</p></div>
+              <h5>II ) Skapa Eclipse-project</h5>
+              <p>Öppna Eclipse och skapa ett nytt project på den plats där du tänkt att jobba (Där du har skapar din webapp-folder).</p>
+              <pre class="prettyprint"> ECLIPSE: File -> New -> Java Project (Fyll i "Location").</pre>
+              <p>Configurera ditt project så att det sparar kompilerade filer i ${PROJECT_HOME}/webapp/WEB-INF/classes</p>
+              <pre class="prettyprint"> ECLIPSE: Project -> Properties -> Java Build Path -> Default Output Folder</pre>
+              <p>Nu är du redo att börja utveckla webappen!</p>
+              <div class="alert alert-info"><p>Sökvägar i filkommandon förutsätter hädanefter att du står i ditt projekts hemkatalog om inget annat anges.</p></div>
+            </section>
+          </div>
+
+          <div class="main-column">
+            <section id="phase1">
+              <h1>2 ) Filuppladdning</h1>
+              <p>Första steget kommer att vara en filuppladdare. Vi kommer inte att spara filerna i databasen till att börja med, utan endast skriva ner dem på disk i den exploderade webappen.</p>
+              <h5>I ) Skapa index.html i webapp/ med ett filuppladdningsformulär</h5>
+              <p>Vi ska använda oss av ett http-formulär vars action blir ett http-request. Det finns ännu inte något som kommer att svara på requestet, men det ska vi ordna i nästa steg!</p>
+              <pre class="prettyprint">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;body&gt;
+
+    &lt;form action="upload_file" method="post" enctype="multipart/form-data"&gt;
+      &lt;label for="file"&gt;Filename:&lt;/label&gt;
+      &lt;input type="file" name="file" id="file"&gt;&lt;br&gt;
+      &lt;input type="submit" name="submit" value="Submit"&gt;
+    &lt;/form&gt;
+
+  &lt;/body&gt;
+&lt;/html&gt;</pre>
+              <p>Öppna <a href="http://localhost:8080/photopirate/index.html">http://localhost:8080/photopirate/index.html</a> i en browser och försök att använda formuläret.</p>
+              <p>Servern svarar att det inte finns någon resurs under /photopirate/upload_file, och det är mycket riktigt. Låt oss bygga en servlet som tar hand om anropet!</p>
+              <h5>II ) Skapa en ny servlet och mappa in den under /upload_file</h5>
+              <p>För att Eclipse ska veta vad en HttpServlet är så måste vi lägga till servlet-api.jar i dess build path.</p>
+              <pre class="prettyprint">mkdir lib
+cp ${TOMCAT_HOME}/lib/servlet-api.jar lib/
+
+ECLIPSE: Project -> Properties -> Java Build Path -> Libraries -> Add JARs -> lib/servlet-api.jar</pre>
+              <p>Skapa en ny servlet</p>
+              <pre class="prettyprint">ECLIPSE: File -> New Class (Name: FileUploadServlet, Superclass: javax.servlet.http.HttpServlet</pre>
+              <p>Skriv kod för en tom servlet som kan svara på doPost(...)</p>
+              <p>När en servlet anropas för att ta hand om ett request så anropas dess "service()"-metod, och defaultimplementationen av service() i javax.servlet.http.HttpServlet kollar helt enkelt på requeststs METHOD och anropar motsvarande doXXX()-metod. Defaulimplementationen av doPost() svarar med 405. Så vi får göra en ny implementation av doPost i vår ärvda klass.</p>
+              <pre class="prettyprint">import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+
+public class FileUploadServlet extends HttpServlet {
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.getOutputStream().write("Thanks for the file!".getBytes());
+    }
+
+}</pre>
+              <div class="alert alert-info"><p>Lätt märke till liketen mellan "Thanks for the file" och requestet som vi sket ur oss i tutorial/sockets!</p>
+              <p>Denna servlet gör inte något med filen i fråga, men det kommer vi att ordna till strax.</p></div>
+              <p>Mappa in vår nya servlet under /upload_file</p>
+              <p>Skapa en ny fil som heter web.xml under webapp/WEB-INF/</p>
+              <pre class="prettyprint">webapp/WEB-INF/web.xml:
+
+&lt;web-app xmlns="http://java.sun.com/xml/ns/javaee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+  version="3.0"&gt;
+
+  &lt;servlet&gt;
+    &lt;display-name&gt;File Upload Servlet&lt;/display-name&gt;
+    &lt;servlet-name&gt;FileUploadServlet&lt;/servlet-name&gt;
+    &lt;servlet-class&gt;FileUploadServlet&lt;/servlet-class&gt;
+  &lt;/servlet&gt;
+ 
+  &lt;servlet-mapping&gt;
+    &lt;servlet-name&gt;FileUploadServlet&lt;/servlet-name&gt;
+    &lt;url-pattern&gt;/upload_file&lt;/url-pattern&gt;
+  &lt;/servlet-mapping&gt;
+ 
+&lt;/web-app&gt;</pre>
+              <div class="alert alert-info"><p>WEB-INF/web.xml är vår webapps "deployment descriptor", vilken berättar vad för managed resources vår app har, och var dessa resurser finns. (Det går även att configurera detta i kod m.h.a. java @Annotations, men vi kommer bara att använda oss av web.xml för tydlighets skull).</p></div>
+
+              <h5>III ) Spara faktiskt ner filen som skickas till disk</h5>
+              <p>Filinformationen som vi skickade med till doPost() ovan kastas helt enkelt bort av vår servlet. Nu ska vi skriva kod för att faktiskt spara ner den till disk.</p>
+              <p>Filuppladdning med browsers sker genom requests av typen multipart/form-data, vilket innebär att requestbodyn innehåller ett antal delar (parts) separerade av boundaries.</p>
+              <p>Ett generellt multipart-request ser ut något i den här stilen:</p>
+              <pre class="prettyprint">POST /photopirate/upload_file HTTP/1.1
+Content-Length: 1234
+Content-Type: multipart/form-data; boundary=---ANY_STRING_NOT_PART_OF_THE_MESSAGE_BODY---
+
+---ANY_STRING_NOT_PART_OF_THE_MESSAGE_BODY---
+Content-Disposition: form-data; name="file"; filename="Screen shot 2013-06-19 at 2.34.59 PM.png"
+Content-Type: image/png
+
+
+---ANY_STRING_NOT_PART_OF_THE_MESSAGE_BODY---
+Content-Disposition: form-data; name="submit"
+
+Submit
+---ANY_STRING_NOT_PART_OF_THE_MESSAGE_BODY---</pre>
+              <p>Naturligtvis så kan man parsa det själv och dela upp delarna själv, men den saken tycker jag att vi överlämnar åt containern, trots att man måste använda sig av en @Annotation för att få det gjort automagiskt.</p>
+              <p>Om man markerar sin servletklass med annotationen javax.servlet.annotation.MultipartConfig så kommer containern att splitta upp kroppen efter given boundary och ge oss delarna i fint javaformat.</p>
+              <pre class="prettyprint">@MultipartConfig
+public class FileUploadServlet extends HttpServlet {
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+        throws ServletException, IOException
+    {
+        InputStream in = req.getPart("file").getInputStream();
+        File filename = new File("/opt/tomcat/webapps/photopirate/bild.jpg");
+        FileOutputStream out = new FileOutputStream(filename);
+
+        int read = 0;
+        while ((read = in.read()) != -1) out.write(read);
+        out.close();
+    }
+
+}</pre>
+              <p>Detta exempel skriver alltid till samma filnamn, om man vill så kan man komma åt det ursprungliga filnamnet om man vill, eller generera filnamn på något dynamiskt sätt. Men det struntar vi i just nu.</p>
+              <p>Detta är ju naturligtvis ett väldigt naivt exempel på filuppladdningen, men det kan man ju förfina så mycket man vill. Då planen i slutänden är att skriva ner bilden i databasen så är det lite skit samma.</p>
+              <p>Om allt gick bra så bör man nu kunna se filen som man laddade upp på <a href="http://localhost:8080/photopirate/bild.jpg">http://localhost:8080/photopirate/bild.jpg</a></p>
+              <div class="alert alert-info"><p>Implementationen ovan är naturligtvis under all kritik, en "riktig" filuppladdningsservlet hade naturligtvis fångat alla förväntade undantag, hantera olika mimetyper och dessutom skrivit ner filinformationen på en plats avsett för detta, och inte rakt ner i den explodera webappen i tomcats deploy-folder, men det skiter vi i just nu!</p></div>
             </section>
           </div>
 
         </div>
+
       </div>
     </div>
-</div>
-</body>
+  </body>
 </html>
