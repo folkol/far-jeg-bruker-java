@@ -40,6 +40,7 @@
             <li class='active'><a href="#goal">Vårt mål</a></li>
             <li><a href="#environment">Fas 1 - Arbetsmiljö</a></li>
             <li><a href="#phase1">Fas 1 - Filuppladdning</a></li>
+            <li><a href="#phase2">Fas 2 - Dynamisk HTML</a></li>
           </ul>
         </div>
         <div class="span9">
@@ -49,6 +50,7 @@
               <h1>Målet</h1>
               <p>Vi ska, i etapper, producera en webapp (photopirate.war) som vi kan deploya i Tomcat.</p>
               <p>Förlagan är Welles fina photochallenge-sida (Anledningen till att jobba efter en förlaga är att vi kan lägga mer tid på att hacka än att fundera på vad vi ska hacka ihop).</p>
+              <img src="img/photochallenge.png" />
             </section>
           </div>
 
@@ -176,7 +178,8 @@ public class FileUploadServlet extends HttpServlet {
         throws ServletException, IOException
     {
         InputStream in = req.getPart("file").getInputStream();
-        File filename = new File("/opt/tomcat/webapps/photopirate/bild.jpg");
+        String randomString = UUID.randomUUID().toString();
+        File filename = new File("/opt/tomcat/webapps/photopirate/" + randomString + ".jpg");
         FileOutputStream out = new FileOutputStream(filename);
 
         int read = 0;
@@ -185,12 +188,72 @@ public class FileUploadServlet extends HttpServlet {
     }
 
 }</pre>
-              <p>Detta exempel skriver alltid till samma filnamn, om man vill så kan man komma åt det ursprungliga filnamnet om man vill, eller generera filnamn på något dynamiskt sätt. Men det struntar vi i just nu.</p>
-              <p>Detta är ju naturligtvis ett väldigt naivt exempel på filuppladdningen, men det kan man ju förfina så mycket man vill. Då planen i slutänden är att skriva ner bilden i databasen så är det lite skit samma.</p>
-              <p>Om allt gick bra så bör man nu kunna se filen som man laddade upp på <a href="http://localhost:8080/photopirate/bild.jpg">http://localhost:8080/photopirate/bild.jpg</a></p>
+              <p>Detta använder sig av standardklassen UUID för att generera ett förhoppningsvis unikt filnamn. Om man vill så kan man komma åt det ursprungliga filnamnet från clientens fil.</p>
+              <p>Om allt gick bra så bör man nu kunna se filen som man laddade upp på <a href="http://localhost:8080/photopirate/GENERATED_ID.jpg">http://localhost:8080/photopirate/bild.jpg</a></p>
               <div class="alert alert-info"><p>Implementationen ovan är naturligtvis under all kritik, en "riktig" filuppladdningsservlet hade naturligtvis fångat alla förväntade undantag, hantera olika mimetyper och dessutom skrivit ner filinformationen på en plats avsett för detta, och inte rakt ner i den explodera webappen i tomcats deploy-folder, men det skiter vi i just nu!</p></div>
+              <h5>IV ) Redirect efter uppladdning</h5>
+              <p>Efter ett request så visar browsern upp svaret, så även ett request från en form-submit.</p>
+              <p>Antingen måste svara med den html som vi vill rendera i browern direkt ur vår doPost, eller så måste vi efter att ha hanterat filuppladdningen redirecta till en annan servlet/fil/vy för att rendera svaret. (Denna redirect sker då på server-sidan, och den andra sidans output blir alltså svaret som browsen får på själva postningen av formuläret).</p>
+              <p>En första stab är att redirecta till /, för att rendera samma sak efter uppladdning som man får om man går mot index.</p>
+              <p>För att göra en redirect så hämtar man "requestdispatchern" från requestet i fråga och ber den att forwarda requestst. Det ser ut såhär:</p>
+              <pre class="prettyprint">...
+
+req.getRequestDispatcher("/").forward(req, resp);</pre>
+              <p>Detta kommer att rendera framsidan som svar även på formulärpostingen, vilket är bättre än inget men fortfarande lite muppigt (T.ex. så står man ju kvar på urlen /upload_file, vilket är precis vad browsern frågade efter). Ett alternativ är att göra en client side redirect, vilket får browsern att efter postning byta url.</p>
+              <pre class="prettyprint">//        req.getRequestDispatcher("/").forward(req, resp);
+resp.sendRedirect(req.getContextPath());</pre>
+              <p>Om man kör denna kod och med inspectorn tittar på vad för requests och responses som sker så ser flödet ut såhär:</p>
+              <pre class="prettyprint">GET /photopirate                       &lt;-- Ursprungliga Hämtningen av formuläret
+  |-&gt; response: Sida med HTML-formulär
+POST /photopirate/upload_file          &lt;-- Posta formuläret, med fil m.m.
+  |-&gt; response: Redirect (302) Location: http://localhost:8080/photopirate
+GET /photopirate                       &lt;-- Browsern följer redirecten
+  |-&gt; response: Sida med HTML-formulär</pre>
             </section>
           </div>
+
+          <div class="main-column">
+            <section id="phase2">
+              <h1>3 ) "Dynamisk" html</h1>
+              <p>En hemsida som alltid ser likadan ut passar ju inte så fasligt bra för ett så fint community som photopirate. Nu ska vi visa hur vi på ett MVC-inspirerat manér renderar dynamisk html från en viss sida.</p>
+              <p>Grunden i dynamisk html med Java är att man kör lite kod som räknar ut vad som ska visas, och sedan låter (forward enligt ovan) en vy rendera en sida utefter denna data.</p>
+              <p>En separation of concerns på detta vis är fördelaktigt på många vis, inte minst dela upp "logik" och "utseende" för att hålla koden tydlig, men även för återanvändning av kod när man t.ex. vill ha en viss rendering av sidan för Desktop och en annan för mobile (Man vill ofta använda sig av samma eller liknanade data i bägge fallen).</p>
+              <p>En vy-teknologi som används i Java är JSP:er, det är en textfil som i samband med ett request läses in av Containern och översätts till en servlet som sedan renderar output på vanligt vis (request.getOutputStream().write()).</p>
+              <p>I detta exempel så ska vi ersätta photopirates framsida med en dynamiskt genererad sida. (Det är ju synd att bara kasta bort vårt fina formulär, så vi döper helt enkelt om index.html till upload.html innan vi böjar på vår "dynamiska" index.html</p>
+              <pre class="prettyprint">Döp om index.html till upload.html</pre>
+              <h5>I - Skapa en ny servlet som ska användas på index.html</h5>
+              <p>Varje MVC-sida har bland annat en servlet för att hantera logiken bakom att hämta data och att paketera datan i det format vy:n förväntar sig, och sedan forward:a till vyn i fråga. "Controller"-delen i Java MVC är en Servlet. Så nu ska vi bygga vår index-servlet!</p>
+              <pre class="prettyprint">public class IndexServlet extends HttpServlet {
+
+        @Override
+        protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+                req.setAttribute("data", "'Dynamisk' data");
+                req.getRequestDispatcher("index.jsp").forward(req, resp);
+        }
+
+}</pre>
+              <p>Denna servlet sätter lite "dynamisk" data i requestattributet "data" och forwardar till index.jsp. Index.jsp finns inte ännu, den ska vi skapa strax!</p>
+              <p>Det räcker som sagt inte med att bara skapa Servlet-klassen i fråga, den måste mappas in under ett url-pattern. Det kan göras i källkoden med annotations, men i denna labbkurs så håller vi oss till web.xml.</p>
+            <pre class="prettyprint">web.xml:
+
+
+...
+
+&lt;servlet&gt;
+  &lt;display-name&gt;Index Servlet&lt;/display-name&gt;
+  &lt;servlet-name&gt;IndexServlet&lt;/servlet-name&gt;
+  &lt;servlet-class&gt;IndexServlet&lt;/servlet-class&gt;
+&lt;/servlet&gt;
+
+...
+
+&lt;servlet-mapping&gt;
+  &lt;servlet-name&gt;IndexServlet&lt;/servlet-name&gt;
+  &lt;url-pattern&gt;/index.html&lt;/url-pattern&gt;
+&lt;/servlet-mapping&gt;</pre>
+            </section>
+          </div>
+
 
         </div>
 

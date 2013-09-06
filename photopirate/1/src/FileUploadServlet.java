@@ -2,6 +2,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -14,13 +15,21 @@ public class FileUploadServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String randomString = UUID.randomUUID().toString() + ".jpg";
+        File imageDirectory = new File("/opt/tomcat/webapps/photopirate/bilder/");
+        if (!imageDirectory.exists()) imageDirectory.mkdir();
+        File filename = new File(imageDirectory, randomString);
+
+        System.out.println(filename);
+
         InputStream in = req.getPart("file").getInputStream();
-        File filename = new File("/opt/tomcat/webapps/photopirate/bild.jpg");
         FileOutputStream out = new FileOutputStream(filename);
 
         int read = 0;
         while ((read = in.read()) != -1) out.write(read);
         out.close();
+
+        resp.sendRedirect(req.getContextPath());
     }
 
 }
