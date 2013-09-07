@@ -292,7 +292,6 @@ if (username != null) {
     request.getSession().setAttribute("user", username);
     response.sendRedirect(request.getContextPath() + "/");
 } else {
-    request.setAttribute("error", "Unknown login, try again");
     request.getRequestDispatcher(request.getContextPath() + "/login.jsp").forward(request, response);
 }</pre>
               <p>Nu skapar vi ett "Filter" och mappar in på den url vi ska skydda. I vårt fall upload.html. Ett filter fungerar på motsvarande sätt som servlets.</p>

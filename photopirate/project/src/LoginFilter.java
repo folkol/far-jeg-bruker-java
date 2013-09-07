@@ -18,7 +18,7 @@ public class LoginFilter implements Filter {
         if (((HttpServletRequest) request).getSession().getAttribute("user") != null) {
             filterChain.doFilter(request, response);
         } else {
-            ((HttpServletResponse) response).sendRedirect(httpRequest.getContextPath() + "/login.jsp"); // Not logged in, show login page. You can eventually show the error page instead.
+            ((HttpServletResponse) response).sendRedirect(httpRequest.getContextPath() + "/login.jsp");
         }
     }
 

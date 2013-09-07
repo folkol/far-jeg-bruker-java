@@ -11,12 +11,16 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
+
+        // DO shit
+
+
         if (username != null) {
-            request.getSession().setAttribute("user", username); // Put user in session.
-            response.sendRedirect(request.getContextPath() + "/"); // Go to some start page.
+            request.getSession().setAttribute("user", username);
+            response.sendRedirect(request.getContextPath() + "/");
         } else {
-            request.setAttribute("error", "Unknown login, try again"); // Set error msg for ${error}
-            request.getRequestDispatcher(request.getContextPath() + "/login.jsp").forward(request, response); // Go back to login page.
+            request.setAttribute("error", "Unknown login, try again");
+            request.getRequestDispatcher(request.getContextPath() + "/login.jsp").forward(request, response);
         }
     }
 }
