@@ -12,14 +12,12 @@ public class LoginServlet extends HttpServlet {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
 
-        // DO shit
-
+        // Check password etc
 
         if (username != null) {
             request.getSession().setAttribute("user", username);
             response.sendRedirect(request.getContextPath() + "/");
         } else {
-            request.setAttribute("error", "Unknown login, try again");
             request.getRequestDispatcher(request.getContextPath() + "/login.jsp").forward(request, response);
         }
     }
