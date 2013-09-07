@@ -14,11 +14,12 @@ public class LoginFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
+        HttpServletResponse httpResponse = (HttpServletResponse) response;
 
-        if (((HttpServletRequest) request).getSession().getAttribute("user") != null) {
+        if (httpRequest.getSession().getAttribute("user") != null) {
             filterChain.doFilter(request, response);
         } else {
-            ((HttpServletResponse) response).sendRedirect(httpRequest.getContextPath() + "/login.jsp");
+            httpResponse.sendRedirect(httpRequest.getContextPath() + "/login.jsp");
         }
     }
 
