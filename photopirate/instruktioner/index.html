@@ -268,11 +268,86 @@ req.getRequestDispatcher("/index.jsp").forward(req, resp);</pre>
 
           <div class="main-column">
             <section id="phase3">
+              <h1>3 ) Inloggning</h1>
+              <p>För ladda upp en fil så måste man säga vem man är, och har man ännu inte sagt det så måste man logga in. Vi gör detta genom att mappa in ett "filter" framför upload.html som kollar ifall vi har sagt vem vi är, om inte så få vi inte komma till uppladdningsformuläret utan måste ange det istället.</p>
+              <p>Om man vill vara elak så kan man ju i samband med detta även kräva lösenord, men så elaka ska vi inte behöva vara just nu</p>
+              <pre class="prettyprint">login.jsp:
+
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;body&gt;
+
+  &lt;form action="login" method="post"&gt;
+    &lt;input type="text" name="username"&gt;
+    &lt;input type="submit"&gt;
+  &lt;/form&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+              <p>Vi skapar sedan en login-servlet och mappar in den på /login</p>
+              <p>Implementera doPost såhär:</p>
+              <pre classs="prettyprint">String username = request.getParameter("username");
+String password = request.getParameter("password");
+if (username != null) {
+    request.getSession().setAttribute("user", username);
+    response.sendRedirect(request.getContextPath() + "/");
+} else {
+    request.setAttribute("error", "Unknown login, try again");
+    request.getRequestDispatcher(request.getContextPath() + "/login.jsp").forward(request, response);
+}</pre>
+              <p>Nu skapar vi ett "Filter" och mappar in på den url vi ska skydda. I vårt fall upload.html. Ett filter fungerar på motsvarande sätt som servlets.</p>
+              <pre class="prettyprint">import java.io.IOException;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+public class LoginFilter implements Filter {
+
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
+
+        if (((HttpServletRequest) request).getSession().getAttribute("user") != null) {
+            filterChain.doFilter(request, response);
+        } else {
+            ((HttpServletResponse) response).sendRedirect(httpRequest.getContextPath() + "/login.jsp");
+        }
+    }
+
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+    }
+
+    @Override
+    public void destroy() {
+    }
+}</pre>
+              <p>Mappa in den så här i web.xml</p>
+<pre class="prettyprint">&lt;filter&gt;
+  &lt;filter-name&gt;LogFilter&lt;/filter-name&gt;
+  &lt;filter-class&gt;LoginFilter&lt;/filter-class&gt;
+&lt;/filter&gt;
+
+&lt;filter-mapping&gt;
+  &lt;filter-name&gt;LogFilter&lt;/filter-name&gt;
+  &lt;url-pattern&gt;/upload.html&lt;/url-pattern&gt;
+&lt;/filter-mapping&gt;</pre>
+
+            </section>
+          </div>
+
+          <div class="main-column">
+            <section id="phase3">
               <h1>3 ) Nu då?</h1>
               <ul>
                 <li>Databas</li>
                 <li>Bygg flera sidor. Challenges etc.</li>
-                <li>Inloggning. (Filter)</li>
               </ul>
             </section>
           </div>

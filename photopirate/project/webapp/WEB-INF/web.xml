@@ -1,7 +1,5 @@
-<web-app xmlns="http://java.sun.com/xml/ns/javaee"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
-         version="3.0">
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+  version="3.0">
 
   <servlet>
     <display-name>File Upload Servlet</display-name>
@@ -19,8 +17,14 @@
     <display-name>Index View Servlet</display-name>
     <servlet-name>IndexViewServlet</servlet-name>
     <servlet-class>IndexViewServlet</servlet-class>
-  </servlet>  
+  </servlet>
 
+  <servlet>
+    <display-name>Login Servlet</display-name>
+    <servlet-name>LoginServlet</servlet-name>
+    <servlet-class>LoginServlet</servlet-class>
+  </servlet>
+  
   <servlet-mapping>
     <servlet-name>FileUploadServlet</servlet-name>
     <url-pattern>/upload_file</url-pattern>
@@ -35,5 +39,23 @@
     <servlet-name>IndexViewServlet</servlet-name>
     <url-pattern>/indexview</url-pattern>
   </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>LoginServlet</servlet-name>
+    <url-pattern>/login</url-pattern>
+  </servlet-mapping>
 
+  <filter>
+    <filter-name>LogFilter</filter-name>
+    <filter-class>LoginFilter</filter-class>
+    <init-param>
+      <param-name>test-param</param-name>
+      <param-value>This parameter is for testing.</param-value>
+    </init-param>
+  </filter>
+  
+  <filter-mapping>
+    <filter-name>LogFilter</filter-name>
+    <url-pattern>/upload.html</url-pattern>
+  </filter-mapping>
 </web-app>
