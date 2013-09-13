@@ -408,6 +408,8 @@
         <li>Bekräfta att session 2 får se den nya datan.</li>
         <li>Rollbacka transaktionen</li>
         <li>Bekräfta att session 2 inte längre ser den rollbackade datan</li>
+        <li>Ta bort databasen</li>
+        <li>Quit!</li>
       </ol>
       <div class="terminal">
         <div class="session2">
@@ -423,7 +425,14 @@
  
  mysql> ROLLBACK;
  Query OK, 0 rows affected (0.00 sec)
-        </div>
+
+ mysql> drop database transtest;
+ Query OK, 1 row affected (0.01 sec)
+
+ mysql> quit
+ Bye
+
+ $</div>
         <div class="session2">
           <pre>
  mysql> SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
