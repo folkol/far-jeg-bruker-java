@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Databastransaktioner</title>
+    <style>
+      body {
+      background-color: #fff;
+      }
+
+      div.main-column {
+      width: 700px;
+      background-color: #ddd;
+      padding: 5px;
+      border: solid 1px #555;
+      }
+
+      div.terminal {
+      width: 100%;
+      color: #666;
+      overflow: hidden;
+      }
+
+      div.terminal div {
+      float: left;
+      background-color: #000;
+      width: 47%;
+      margin: 1%;
+      border: 3px solid #ddd;
+      }
+      
+      ol {
+      font-weight: bold;
+      color: #d44;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="main-column">
+      <h2>Skapa en databas</h2>
+      <p>
+        Starta två databasconnections, skapa en databas och verifiera att den syns för båda användarna (Session 1 = left, session 2 = right).
+      </p>
+      <ol>
+        <li>Skapa databas i session 1</li>
+        <li>Verifiera att den syns i session 2</li>
+        <li>Använd databasen i bägge sessions.</li>
+      </ol>
+      <div class="terminal">
+        <div class="session2">
+          <pre>
+ $ mysql -u root
+ mysql> CREATE DATABASE transtest;
+ Query OK, 1 row affected (0.00 sec)
+
+ mysql> USE transtest;
+          </pre>
+        </div>
+        <div class="session2">
+          <pre>
+ $ mysql -u root
+ mysql> SHOW databases;
+ +--------------------+
+ | Database           |
+ +--------------------+
+ | information_schema |
+ | performance_schema |
+ | transtest          |
+ +--------------------+
+ 3 rows in set (0.00 sec)
+
+ mysql> USE transtest;
+          </pre>
+        </div>
+      </div>
+
+      <h2>Skapa en tabell</h2>
+      <p>
+        Skapa en tabell, bekräfta att den syns i bägge sessions.
+      </p>
+      <ol>
+        <li>Skapa tabell i session 1</li>
+        <li>Verifiera att den syns i session 2</li>
+      </ol>
+      <div class="terminal">
+        <div class="session2">
+          <pre>
+ mysql> CREATE TABLE events
+   -> (id INT NOT NULL AUTO_INCREMENT,
+   -> PRIMARY KEY(id),
+   -> data VARCHAR(100));
+ Query OK, 0 rows affected (0.01 sec)
+          </pre>
+        </div>
+        <div class="session2">
+          <pre>
+ mysql> show tables;
+ +---------------------+
+ | Tables_in_transtest |
+ +---------------------+
+ | events              |
+ +---------------------+
+ 1 row in set (0.00 sec)
+          </pre>
+        </div>
+      </div>
+
+      <h2>Lagra lite data</h2>
+      <p>
+        Lägg in lite data i events. Bekräfta att det syns förbägge användare. 
+      </p>
+      <ol>
+        <li>Lägg till data i session 1.</li>
+        <li>Verifiera att den syns i session 2</li>
+      </ol>
+      <div class="terminal">
+        <div class="session2">
+          <pre>
+ mysql> INSERT INTO events (data) VALUES ("lol");
+ Query OK, 1 row affected (0.00 sec)
+
+ mysql> SELECT * FROM events;
+ +----+------+
+ | id | data |
+ +----+------+
+ |  1 | lol  |
+ +----+------+
+ 1 row in set (0.00 sec)
+          </pre>
+        </div>
+        <div class="session2">
+          <pre>
+ mysql> SELECT * FROM events;
+ +----+------+
+ | id | data |
+ +----+------+
+ |  1 | lol  |
+ +----+------+
+ 1 row in set (0.00 sec)
+          </pre>
+        </div>
+      </div>
+
+      <h2>Transaktioner - commit</h2>
+      <p>
+        Transaktioner gör att man kan bunta ihop flera queries och garanteras att antingen skrivs alla ner atomärt, eller så skrivs ingen ner.
+      </p>
+      <p>Databastransaktioner går till så att man startar en transaktion, utför en eller flera queries, och sedan gör man antingen COMMIT (Realiserar alla queries på samma gång) eller ROLLBACK (Avbryter hela transaktionen och avbryter alla dataändringarn som skett under transaktionens gång).</p>
+      <ol>
+        <li>Starta en transaktion i session 1.</li>
+        <li>Lägg till lite data i tabellen</li>
+        <li>Verifiera att den syns i session 1</li>
+        <li>Verifiera att den INTE syns i session 2</li>
+        <li>Committa transaktionen i session 1</li>
+        <li>Verifiera att resultatet syns i session 2</li>
+      </ol>
+      <div class="terminal">
+        <div class="session2">
+          <pre>
+ mysql> START TRANSACTION;
+ Query OK, 0 rows affected (0.00 sec)
+
+ mysql> INSERT INTO events
+   -> (data) VALUES ("isolerad!");
+ Query OK, 1 row affected (0.00 sec)
+
+ mysql> SELECT * FROM events;
+ +----+-----------+
+ | id | data      |
+ +----+-----------+
+ |  1 | lol       |
+ |  2 | isolerad! |
+ +----+-----------+
+ 2 rows in set (0.00 sec)
+
+ mysql> COMMIT;
+ Query OK, 0 rows affected (0.00 sec)
+          </pre>
+        </div>
+        <div class="session2">
+          <pre>
+ mysql> select * from events;
+ +----+------+
+ | id | data |
+ +----+------+
+ |  1 | lol  |
+ +----+------+
+ 1 row in set (0.00 sec)
+
+ mysql> SELECT * FROM events;
+ +----+-----------+
+ | id | data      |
+ +----+-----------+
+ |  1 | lol       |
+ |  2 | isolerad! |
+ +----+-----------+
+ 2 rows in set (0.00 sec)
+          </pre>
+        </div>
+      </div>
+
+      <h2>Transaktioner - rollback</h2>
+      <p>
+        Nu ska vi testa samma sak, men avsluta med ROLLBACK istället för COMMIT.
+      </p>
+      <ol>
+        <li>Starta en transaktion i session 1.</li>
+        <li>Lägg till lite data i tabellen</li>
+        <li>Verifiera att den syns i session 1</li>
+        <li>Verifiera att den INTE syns i session 2</li>
+        <li>Rollbacka transaktionen i session 1</li>
+        <li>Verifiera att resultatet INTE länge syns i session 1</li>
+        <li>Verifiera att resultatet inte heller syns i session 2</li>
+      </ol>
+      <div class="terminal">
+        <div class="session2">
+          <pre>
+ mysql> START TRANSACTION;
+ Query OK, 0 rows affected (0.00 sec)
+
+ mysql> INSERT INTO events
+   -> (data) VALUES ("isolerad igen...");
+ Query OK, 1 row affected (0.00 sec)
+
+ mysql> SELECT * FROM events;
+ +----+------------------+
+ | id | data             |
+ +----+------------------+
+ |  1 | lol              |
+ |  2 | isolerad!        |
+ |  3 | isolerad igen... |
+ +----+------------------+
+ 3 rows in set (0.00 sec)
+
+ mysql> ROLLBACK;
+ Query OK, 0 rows affected (0.01 sec)
+
+ mysql> SELECT * FROM events;
+ +----+-----------+
+ | id | data      |
+ +----+-----------+
+ |  1 | lol       |
+ |  2 | isolerad! |
+ +----+-----------+
+ 2 rows in set (0.00 sec)</pre>
+        </div>
+        <div class="session2">
+          <pre>
+ mysql> SELECT * FROM events;
+ +----+-----------+
+ | id | data      |
+ +----+-----------+
+ |  1 | lol       |
+ |  2 | isolerad! |
+ +----+-----------+
+ 2 rows in set (0.00 sec)
+          </pre>
+        </div>
+      </div>
+
+      <h2>Isolation levels - REPEATABLE-READ</h2>
+      <p>Man kan styra nivån av isolering mellan transaktioner genom att ändra <a href="http://en.wikipedia.org/wiki/Isolation_(database_systems)">"Transaction Isolation Level"</a></p>
+      <p>Default isolation level för MySQL beror på vilken storage engine man använder för tabellen, för min databas (MySQL 5.5.28) så används InnoDB ifall man inte sagt något annat, och då är default isolation level <a href="http://dev.mysql.com/doc/refman/5.0/en/set-transaction.html#isolevel_repeatable-read">"REPEATABLE READ"</a></p>
+      <ol>
+        <li>Visa transaction isolation level i session 1</li>
+        <li>Gör en SELECT i session 1</li>
+        <li>Lägg till lite ny data i session 2</li>
+        <li>Bekräfta att session 1 är isolerad från denna ändring.</li>
+        <li>Rollbacka transaktionen</li>
+        <li>Bekräfta att session 1 nu kan se den nya datab.</li>
+      </ol>
+      <div class="terminal">
+        <div class="session2">
+          <pre>
+ mysql> SELECT @@session.tx_isolation;
+ +------------------------+
+ | @@session.tx_isolation |
+ +------------------------+
+ | REPEATABLE-READ        |
+ +------------------------+
+ 1 row in set (0.00 sec)
+
+ mysql> START TRANSACTION;
+ Query OK, 0 rows affected (0.00 sec)
+ 
+ mysql> SELECT * FROM events;
+ +----+---------------+
+ | id | data          |
+ +----+---------------+
+ |  1 | lol           |
+ |  2 | isolerad!     |
+ |  4 | Other session |
+ +----+---------------+
+ 4 rows in set (0.00 sec)
+ 
+ mysql> SELECT * FROM events;
+ +----+---------------+
+ | id | data          |
+ +----+---------------+
+ |  1 | lol           |
+ |  2 | isolerad!     |
+ |  4 | Other session |
+ +----+---------------+
+ 4 rows in set (0.00 sec)
+ 
+ mysql> ROLLBACK;
+ Query OK, 0 rows affected (0.00 sec)
+ 
+ mysql> SELECT * FROM events;
+ +----+---------------+
+ | id | data          |
+ +----+---------------+
+ |  1 | lol           |
+ |  2 | isolerad!     |
+ |  4 | Other session |
+ |  5 | NEUES         |
+ +----+---------------+
+ 5 rows in set (0.00 sec)
+</pre>
+        </div>
+        <div class="session2">
+          <pre>
+ mysql> INSERT INTO events
+   -> (data) VALUES ("NEUES");
+ Query OK, 1 row affected (0.00 sec)
+ 
+ mysql> SELECT * FROM events;
+ +----+---------------+
+ | id | data          |
+ +----+---------------+
+ |  1 | lol           |
+ |  2 | isolerad!     |
+ |  4 | Other session |
+ |  5 | NEUES         |
+ +----+---------------+
+ 5 rows in set (0.00 sec)
+          </pre>
+        </div>
+      </div>
+
+      <h2>Isolation levels - READ-COMMITTED</h2>
+      <p>Nivån READ-COMMITTED innebär att pågående transaktion får tillgång till data som är committad i andra transaktioner.</a></p>
+      <ol>
+        <li>Sätt transaction isolation level till READ-COMMITTED för denna session</li>
+        <li>Gör en SELECT i session 1</li>
+        <li>Lägg till lite ny data i session 2</li>
+        <li>Bekräfta att session 1 får se den nya datan.</li>
+        <li>Rollbacka transaktionen</li>
+      </ol>
+      <div class="terminal">
+        <div class="session2">
+          <pre>
+ mysql> SET SESSION TRANSACTION
+   -> ISOLATION LEVEL READ COMMITTED;
+ Query OK, 0 rows affected (0.00 sec)
+ 
+ mysql> SELECT @@session.tx_isolation;
+ +------------------------+
+ | @@session.tx_isolation |
+ +------------------------+
+ | READ-COMMITTED         |
+ +------------------------+
+ 1 row in set (0.00 sec)
+ 
+ mysql> SELECT * FROM events;
+ +----+---------------+
+ | id | data          |
+ +----+---------------+
+ |  1 | lol           |
+ |  2 | isolerad!     |
+ |  4 | Other session |
+ |  5 | NEUES         |
+ +----+---------------+
+ 5 rows in set (0.00 sec)
+ 
+ mysql> SELECT * FROM events;
+ +----+-----------------+
+ | id | data            |
+ +----+-----------------+
+ |  1 | lol             |
+ |  2 | isolerad!       |
+ |  4 | Other session   |
+ |  5 | NEUES           |
+ |  7 | Other session 2 |
+ +----+-----------------+
+ 6 rows in set (0.00 sec)
+
+ mysql> ROLLBACK;
+ Query OK, 0 rows affected (0.00 sec)
+</pre>
+        </div>
+        <div class="session2">
+          <pre>
+ mysql> INSERT INTO events (data) VALUES ("Other session 2");
+ Query OK, 1 row affected (0.01 sec)          </pre>
+        </div>
+      </div>
+
+      <h2>Isolation levels - READ-UNCOMMITTED (Dirty read)</h2>
+      <p>Nivån READ-UNCOMMITTED innebär att pågående transaktion får tillgång till data som skrivits i andra transaktioner, även innan commit.</p>
+      <ol>
+        <li>Ta bort gammalt skräp ur events</li>
+        <li>Sätt transaction isolation level till READ-UNCOMMITTED för session 2</li>
+        <li>Starta en transaktion i session 1</li>
+        <li>Gör en SELECT i session 2</li>
+        <li>Bekräfta att det inte finns någon data</li>
+        <li>Lägg till lite ny data i session 1</li>
+        <li>Bekräfta att session 2 får se den nya datan.</li>
+        <li>Rollbacka transaktionen</li>
+        <li>Bekräfta att session 2 inte längre ser den rollbackade datan</li>
+      </ol>
+      <div class="terminal">
+        <div class="session2">
+          <pre>
+ mysql> DELETE FROM events;
+ Query OK, 0 rows affected (0.00 sec)</pre>
+ 
+ mysql> START TRANSACTION;
+ Query OK, 0 rows affected (0.00 sec)
+ 
+ mysql> INSERT INTO events (data) VALUES ("NY DATA");
+ Query OK, 1 row affected (0.00 sec)
+ 
+ mysql> ROLLBACK;
+ Query OK, 0 rows affected (0.00 sec)
+        </div>
+        <div class="session2">
+          <pre>
+ mysql> SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+ Query OK, 0 rows affected (0.00 sec)
+ 
+ mysql> select @@session.tx_isolation;
+ +------------------------+
+ | @@session.tx_isolation |
+ +------------------------+
+ | READ-UNCOMMITTED       |
+ +------------------------+
+ 1 row in set (0.00 sec)
+
+ mysql> SELECT * FROM events;
+ Empty set (0.00 sec)
+ 
+ mysql> SELECT * FROM events;
+ +----+---------+
+ | id | data    |
+ +----+---------+
+ | 13 | NY DATA |
+ +----+---------+
+ 1 row in set (0.00 sec)
+ 
+ mysql> SELECT * FROM events;
+ Empty set (0.00 sec)
+          </pre>
+        </div>
+      </div>
+
+    </div>
+  </body>
+</html>
