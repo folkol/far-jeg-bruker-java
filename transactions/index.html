@@ -391,8 +391,10 @@
         </div>
         <div class="session2">
           <pre>
- mysql> INSERT INTO events (data) VALUES ("Other session 2");
- Query OK, 1 row affected (0.01 sec)          </pre>
+ mysql> INSERT INTO events
+   -> (data) VALUES ("Other session 2");
+ Query OK, 1 row affected (0.01 sec)
+          </pre>
         </div>
       </div>
 
@@ -415,12 +417,13 @@
         <div class="session2">
           <pre>
  mysql> DELETE FROM events;
- Query OK, 0 rows affected (0.00 sec)</pre>
+ Query OK, 0 rows affected (0.00 sec)
  
  mysql> START TRANSACTION;
  Query OK, 0 rows affected (0.00 sec)
  
- mysql> INSERT INTO events (data) VALUES ("NY DATA");
+ mysql> INSERT INTO events
+   -> (data) VALUES ("NY DATA");
  Query OK, 1 row affected (0.00 sec)
  
  mysql> ROLLBACK;
@@ -432,10 +435,12 @@
  mysql> quit
  Bye
 
- $</div>
+ $</pre>
+</div>
         <div class="session2">
           <pre>
- mysql> SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+ mysql> SET SESSION TRANSACTION
+   -> ISOLATION LEVEL READ UNCOMMITTED;
  Query OK, 0 rows affected (0.00 sec)
  
  mysql> select @@session.tx_isolation;
