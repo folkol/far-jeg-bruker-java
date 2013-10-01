@@ -1,0 +1,4 @@
+Simple example of a http server.
+
+Build with: javac src/ConcurrencyTest.java src/Concurrency.java
+Run with: java -cp src ConcurrencyTest

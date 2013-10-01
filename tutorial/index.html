@@ -42,6 +42,7 @@
             <li><a href="#webServer">2 - Webserver</a></li>
             <li><a href="#exampleServlet">3 - Servlet</a></li>
             <li><a href="#jdbc">4 - JDBC</a></li>
+            <li><a href="#concurrency">5 - Concurrency</a></li>
           </ul>
         </div>
         <div class="span9">
@@ -176,6 +177,94 @@ java -cp lib/mysql-connector-java-5.1.26-bin.jar:src JDBCExample</pre>
               <p>Du bör nu se en utskrift som säger "Exempeldata"</p>
             </section>
           </div>
+
+          <div class="main-column">
+            <section id="concurrency">
+              <h1>5 - Concurrency</h1>
+              <p><a href="http://en.wikipedia.org/wiki/Concurrency_(computer_science)">Concurrency</a> innebär samtida exekvering av kod. I java sker detta m.h.a. <a href="http://en.wikipedia.org/wiki/Thread_(computing)">trådar</a>, och i denna tutorial ska vi titta på problem som uppstår när flera trådar läser och skriver till samma minnesplats.</p>
+              <h5>I ) Heap och Stack</h5>
+              <p>I <a href="http://sv.wikipedia.org/wiki/Java_Virtual_Machine">JVM:en</a> så delas minnet upp i stack och heap. Lokala variabler, inklusive metodargument, lagras på stacken. Objekt som skapas med "new" (Inklusive deras fält) lagras på heapen.</p>
+              <p>Varje exekveringstråd har sin egen stack, men alla trådar delar på en och samma heap. Detta innebär att två trådar som vardera skriver till samma objekt på heapen riskerar att skriva sönder varandras data.</p>
+              <h5>II ) Kodexempel </h5>
+              <p>Klassen nedan har ett fält (int sharedX), en metod (addOne) samt en lokal variabel (int x).</p>
+              <p>När man skapar ett nytt objekt av typen Concurrency så kommer minne att allokeras på heapen för bland annat variabeln "sharedX". Först när metoden "addOne" anropas så kommer minne att allokeras på aktuell tråds stack.</p>
+              <p>Se concurrency/src/Concurrency.java</p>
+              <pre class="prettyprint">public class Concurrency {
+
+    public int sharedX;
+
+    public void addOne() {
+        int x = sharedX;
+        x = x + 1;
+        sharedX = x;
+    }
+}
+</pre>
+              <h5>III ) ConcurrencyTest</h5>
+              <p>För att påvisa problemet med att flera trådar läser och skriver till samma minnesplats så finns ett test av Concurrency-klassen. Koden i fråga skapar upp ett objekt av typen Concurrency (Alltså på heapen), sedan låter testet 10 trådar få tillgång till objektet i fråga, och alla kommer att anropa addOne om och om igen.</p>
+              <p>Trots att man har anropat addOne en miljon gånger så kommer variabeln sharedX med störta sannolikhet inte att ha värdet en miljon.</p>
+              <p>Koden finns under concurrency/src/ConcurrencyTest.java</p>
+              <pre class="prettyprint">
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+public class ConcurrencyTest {
+
+    private static final int LOADS = 1000000;
+
+    public static void main(String[] args) throws Exception {
+        Concurrency target = new Concurrency();
+        target.sharedX = 0;
+
+        addMillionTimes(target);
+
+        if(target.sharedX != LOADS) {
+            System.out.println(String.format("Fail! (Expected target.x to be %d, but it was %d)", LOADS, target.sharedX));
+        } else {
+            System.out.println("Success!");
+        }
+    }
+
+    private static void addMillionTimes(final Concurrency target) throws InterruptedException {
+        Runnable task = new Runnable() {
+            @Override
+            public void run() {
+                target.addOne();
+            }
+        };
+
+        final ExecutorService executor = Executors.newFixedThreadPool(10);
+        for (int i = 0; i < LOADS; i++) {
+            executor.execute(task);
+        }
+        executor.shutdown();
+        executor.awaitTermination(30, TimeUnit.SECONDS);
+    }
+}
+</pre>              
+              <h5>IV ) Minnes-skiss</h5>
+              <p>Här kommer en fin bild som visar var variablerna finns i minnet. Heap eller stack!</p>
+              <img src="assets/heap_stack.jpg" />
+              <h5>V ) Synchronization</h5>
+              <p>Det man gör i praktiken för att skydda sig från detta är att antingen bara jobba med lokala variabler, bara jobba med immutable data, eller att man <a href="http://docs.oracle.com/javase/tutorial/essential/concurrency/syncmeth.html">synkroniserar</a> koden. Att synkronisera koden innebär att endast en tråd i taget får exekvera kod inom det synkroniserade blocket. (Andra trådar som försöker kommer att stanna upp och vänta på sin tur).</p>
+              <p>Om man ändrar metodsignaturen i addOne och lägger till synchronized så kommer bara en tråd åt gången att kunna exekvera kod däri. D.v.s. man bygger sig en liten transaktion i läs -> edit -> write. Detta innebär att koden inte är lika snabb (Då 9/10 trådar väntar på att få gå in i metoden), men gör att koden fungerar korrekt.</p>
+
+<pre class="prettyprint">public class Concurrency {
+
+    public int sharedX;
+
+    synchronized public void addOne() {
+        int x = sharedX;
+        x = x + 1;
+        sharedX = x;
+    }
+}
+</pre>
+            <p>Testa!</p>
+            </section>
+          </div>
+
         </div>
       </div>
     </div>
