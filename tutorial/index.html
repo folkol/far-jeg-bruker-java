@@ -265,6 +265,76 @@ public class ConcurrencyTest {
 }
 </pre>
             <p>Testa!</p>
+            <h5>VI ) Fler exempel på lås</h5>
+            <p>Synkronisering används varje gång flera saker måste ske synkront. Vanligtvis någon kombination av "Läs, modifiera, skriv".</p>
+            <p>Vi har sett hur vi kan synkronisera ett block ovan, här kommer ett par fler exempel på lås (Anledningen till att vi synkroniserar läsning och skrivning är att antalet bananer och priset hör samman, och man vill inte skriva ut mitt mellan att någon satt 100 bananer för 1000 kr och 1 banan för 11 kronor. För då riskerar man att skriva ut "100 bananer för 11 kronor", och då går man i konkurs :(</p>
+            <p>(Vilket objekt som helst kan användas att låsa på, men det finns vissa pit falls som vi kan gå igenom vid tillfälle. En final array av längd 0 är bra.)</p>
+            <p>Här används ett dedikerat objekt för låsning, en s.k. <a href="http://en.wikipedia.org/wiki/Mutual_exclusion">mutex</a>.</p>
+<pre class="prettyprint">public class SynchronizedOne {
+
+  private int antalBananer;
+  private int totaltPris;
+
+  private final Object[] mutex = new Object[0];
+
+  public void setState(int antal, int pris) {
+    // Aquire the lock of monitor "mutex"
+    synchronized(mutex) {
+      antalBananer = antal;
+      totaltPris = pris;
+    }
+  }
+
+  public String toString() {
+    // Aquire the lock of monitor "mutex"
+    synchronized(mutex) {
+      return "Köp " + antalBananer + " för endast " + totalPris + " kronor!";
+    }
+  }
+
+}</pre>
+            <p>Här används ett objekt som redan är skapat för att låsa. D.v.s. oss själva! (this)</p>
+<pre class="prettyprint">public class SynchronizedTwo {
+
+  private int antalBananer;
+  private int totaltPris;
+
+  public void setState(int antal, int pris) {
+    // Aquire the lock on monitor "this" (Current instance of Synchronized)
+    synchronized(this) {
+      antalBananer = antal;
+      totaltPris = pris;
+    }
+  }
+
+  public String toString() {
+    // Aquire the lock of monitor "this"
+    synchronized(this) {
+      return "Köp " + antalBananer + " för endast " + totalPris + " kronor!";
+    }
+  }
+
+}</pre>
+            <p>Här låser vi också på "this", fast implicit genom att lägga till synchronized i signaturerna</p>
+<pre class="prettyprint">public class SynchronizedThree {
+
+  private int antalBananer;
+  private int totaltPris;
+
+  // Aquire the lock on monitor "this" (Current instance of Synchronized)
+  public synchronized void setStateThree(int antal, int pris) {
+    antalBananer = antal;
+    totaltPris = pris;
+  }
+
+  // Aquire the lock of monitor "this"
+  public synchronized String toString() {
+    return "Köp " + antalBananer + " för endast " + totalPris + " kronor!";
+  }
+
+}
+</pre>
+
             </section>
           </div>
 
