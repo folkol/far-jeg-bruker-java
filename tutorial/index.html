@@ -249,7 +249,7 @@ public class ConcurrencyTest {
               <h5>IV ) Minnes-skiss</h5>
               <p>Här kommer en fin bild som visar var variablerna finns i minnet. Heap eller stack!</p>
               <img src="assets/heap_stack.jpg" />
-              <h5>V ) Synchronisering</h5>
+              <h5>V ) Synkronisering</h5>
               <p>Det man gör i praktiken för att skydda sig från detta är att antingen bara jobba med lokala variabler, bara jobba med <a href="http://en.wikipedia.org/wiki/Immutable_object">immutable</a> data, eller att man <a href="http://docs.oracle.com/javase/tutorial/essential/concurrency/syncmeth.html">synkroniserar</a> koden. Att synkronisera koden innebär att endast en tråd i taget får exekvera kod inom det synkroniserade blocket. (Andra trådar som försöker kommer att stanna upp och vänta på sin tur).</p>
               <p>Om man ändrar metodsignaturen i addOne och lägger till synchronized så kommer bara en tråd åt gången att kunna exekvera kod däri. D.v.s. man bygger sig en litet block med läs -> edit -> write där man är garanterad att ingen annan tråd hinner emellan och fipplar med värdena. Detta innebär att koden inte är lika snabb (Då 9/10 trådar väntar på att få gå in i metoden), men gör att koden fungerar korrekt.</p>
 
